@@ -561,7 +561,7 @@
       end do
       end if
 
-	write(4,*)"T=", t           
+!	write(4,*)"T=", t           
 !	write(4,*)"xoh (1,1)=", xoh (1,1)  
 !	write(4,*)"xoh (1,2)=", xoh(2,1) 
  

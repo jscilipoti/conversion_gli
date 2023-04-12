@@ -168,19 +168,19 @@ subroutine genDatExtr(x,n,extI,extS,temp)
         contador=0
         call conversion(zf)
         
-        if (isnan(zf(1))) then
-            if (camb == 1) then
-                camb = -1
-                i = extS
-            else
-                proc = .false.
-            endif
-        else
+   !     if (isnan(zf(1))) then
+   !         if (camb == 1) then
+   !             camb = -1
+   !             i = extS
+   !         else
+   !             proc = .false.
+   !         endif
+   !     else
             !Escribe en el documento de salida las condiciones
             write(333,"(i0,6(es11.4))") i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
             
             i = i + camb
-        endif
+   !     endif
     enddo
 
 endsubroutine
