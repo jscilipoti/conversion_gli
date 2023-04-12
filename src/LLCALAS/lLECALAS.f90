@@ -561,9 +561,9 @@
       end do
       end if
 
-			write(4,*)"T=", t           
-	write(4,*)"xoh (1,1)=", xoh (1,1)  
-	write(4,*)"xoh (1,2)=", xoh(2,1) 
+	write(4,*)"T=", t           
+!	write(4,*)"xoh (1,1)=", xoh (1,1)  
+!	write(4,*)"xoh (1,2)=", xoh(2,1) 
  
 	 
 
@@ -1037,13 +1037,16 @@
     MS(:,:,:)=0                                                       
     JH(:)=0                                                           
     DO 50 I=1,NK !Lectura de compuestos
+      write(*,*) "----"
        ! do j=1,10
-            READ(2,"(20i2)") (MS(I,J,1),MS(I,J,2),j=1,size(ms(1,:,1)))    
+            READ(2,*) (MS(I,J,1),MS(I,J,2),j=1,size(ms(1,:,1)))    
        ! enddo
       !  READ(2,*) NGI,(MS(I,J,1),MS(I,J,2),J=1,NGI)    
         do 50 j=1,size(ms(1,:,1))
             igamt(j,i)=ms(i,j,1)
             nytt(j,i)=ms(i,j,2)
+            write(*,*)ms(i,j,1)
+            write(*,*)ms(i,j,2)
 50  continue	
 
 !****Jose S****
