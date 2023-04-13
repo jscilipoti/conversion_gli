@@ -177,13 +177,14 @@ subroutine genDatExtr(x,n,extI,extS,temp)
    !         endif
    !     else
             !Escribe en el documento de salida las condiciones
-            write(3333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
-            
+        !open(unit=3333,file="salida3.out",status="old")
+            write(333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
+         !   close(unit=3333)
             i = i + camb
    !     endif
     enddo
 
-endsubroutine
+endsubroutine genDatExtr
     
 function anexcep(esp,minmar,x)
 

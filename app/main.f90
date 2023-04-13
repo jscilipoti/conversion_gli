@@ -35,7 +35,7 @@ program main
     
     !Genera una lista de concentraciones segun la funcion genDat que esta en el documento Conversion_f     
     !call genDat(x,variables)
-    call genDatExtr(x,variables,2,98,.false.)
+    call genDatExtr(x,variables,2,10,.false.)
     
     !Genera una espacion de datos de la funcion objetivo en todos los valores posibles de X
     !call genDatosGraf(40)
