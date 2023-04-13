@@ -13,7 +13,7 @@ program main
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
     
-    OPEN (unit=333,file='salida.OUT',form='FORMATTED')
+    OPEN (unit=333,file='salida.OUT')
     call leer_input_flash()
 
     

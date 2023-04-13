@@ -177,7 +177,7 @@ subroutine genDatExtr(x,n,extI,extS,temp)
    !         endif
    !     else
             !Escribe en el documento de salida las condiciones
-            write(333,"(i0,6(es11.4))") i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
+            write(3333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
             
             i = i + camb
    !     endif
