@@ -1521,10 +1521,10 @@
       GOTO 40                                                           
    30 SUM=0.                                                            
       DO 35 I=1,N                                                       
-      GG=A(I)-GAM(JM,I)                                                 
-      IF(GG.LT.-50.D0) GG=-50.D0                                        
-      Y(I)=DEXP(GG)                                                     
-   35 SUM=SUM+Y(I)                                                      
+         GG=A(I)-GAM(JM,I)                                                 
+         IF(GG.LT.-50.D0) GG=-50.D0                                        
+         Y(I)=DEXP(GG)                                                     
+   35    SUM=SUM+Y(I)                                                      
    40 NA=3                                                              
       DO 43 K=1,NA                                                      
       DO 36 I=1,N                                                       

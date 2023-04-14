@@ -120,8 +120,8 @@ subroutine genDat(x,n)
     
         !z(1) = x(1)
         !aglim = x(1)
-        z(1) = x(1)
-        z(2) = (101 - i)/50. + 0.000000001
+!        z(1) = x(1)
+!        z(2) = (101 - i)/50. + 0.000000001
         
         contador=0
         call conversion(zf)
@@ -150,7 +150,7 @@ subroutine genDatExtr(x,n,extI,extS,temp)
     i = extI
     camb = 1
     proc = .true.
-    do while ((proc) .and. (i <= extS) .and. (i >= extI))
+    !do while ((proc) .and. (i <= extS) .and. (i >= extI))
         
         write(*,*)
         write(*,*)
@@ -161,9 +161,9 @@ subroutine genDatExtr(x,n,extI,extS,temp)
         x(1) = i
         !T = x(1) + 273.15
     
-        x(1) = (i - 1)/50. + 0.000000001 !+ 393.15
-        z(1) = x(1)
-        z(2) = (101 - i)/50. + 0.000000001
+    !    x(1) = (i - 1)/50. + 0.000000001 !+ 393.15
+    !    z(1) = x(1)
+    !    z(2) = (101 - i)/50. + 0.000000001
         
         contador=0
         call conversion(zf)
@@ -182,7 +182,7 @@ subroutine genDatExtr(x,n,extI,extS,temp)
          !   close(unit=3333)
             i = i + camb
    !     endif
-    enddo
+ !   enddo
 
 endsubroutine genDatExtr
     

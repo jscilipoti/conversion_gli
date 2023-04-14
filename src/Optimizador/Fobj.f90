@@ -12,7 +12,7 @@ doubleprecision function f(x,n)
     !Sentencias
 
 
-        !Calculo composición final a partir de la nueva conversión
+        !Calculo composiciï¿½n final a partir de la nueva conversiï¿½n
         esq = z(2) + z(3) + z(4) + z(5)
         zf(:) = z(:)
         zf(2) = esq * x(1)
@@ -47,7 +47,7 @@ doubleprecision function f(x,n)
         !flash
         call llecalas(T,P,zf)
         
-        !cálculo de actividades
+        !cï¿½lculo de actividades
         do i=1,size(z)
             if (compfases(i,1) > 1.0D-10) then
                 act(i) = compfases(i,1)*exp(agam(i,1))
@@ -56,7 +56,7 @@ doubleprecision function f(x,n)
             endif
         enddo
         
-        !cálculo de Keq(clac)
+        !cï¿½lculo de Keq(clac)
         Keqcalc(1) = act(3)*act(6)/(act(2)*act(1))
         Keqcalc(2) = act(4)*act(6)/(act(3)*act(1))
         Keqcalc(3) = act(5)*act(6)/(act(4)*act(1))
@@ -95,9 +95,9 @@ doubleprecision function f(x,n)
         
         !Acido Oleico 6 (T = 393.15-483.15 K) Promedio
 
-        Kexp(1) = 0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
-        Kexp(2) = 0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
-        Kexp(3) = 0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
+        Kexp(1) = 4.30465!0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
+        Kexp(2) = 0.791!0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
+        Kexp(3) = 0.239!0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
         
         f = 0.
         do i=1,size(Keqcalc)
