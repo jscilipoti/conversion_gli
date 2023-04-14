@@ -419,7 +419,7 @@
       dimension dgasdxij (12,12), drhodx(12), drhodni(12,6,12)
 	
 
-
+         actas(:) = 0.0
       dk=1.381e-23
       deloh=0.0
       xnoh=0.0
