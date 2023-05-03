@@ -183,6 +183,9 @@ subroutine genDatExtr(x,n,extI,extS,temp)
             i = i + camb
    !     endif
  !   enddo
+    write(*,*) "K1", ksalida(1)
+    write(*,*) "K2", ksalida(2)
+    write(*,*) "K3", ksalida(3)
 
 endsubroutine genDatExtr
     

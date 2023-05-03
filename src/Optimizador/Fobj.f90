@@ -95,9 +95,9 @@ doubleprecision function f(x,n)
         
         !Acido Oleico 6 (T = 393.15-483.15 K) Promedio
 
-        Kexp(1) = 4.30465!0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
-        Kexp(2) = 1.2!0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
-        Kexp(3) = 0.239!0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
+        Kexp(1) = 0.8382134564!0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
+        Kexp(2) = 1.938223665!0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
+        Kexp(3) = 3.958402258!0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
         
         f = 0.
         do i=1,size(Keqcalc)
@@ -109,6 +109,7 @@ doubleprecision function f(x,n)
             endif
         enddo
         contador = contador + 1
+        ksalida(:) = keqcalc(:)
         
     endfunction f
     
