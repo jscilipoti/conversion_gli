@@ -55,7 +55,10 @@ doubleprecision function f(x,n)
                 act(i) = compfases(i,2)*exp(agam(i,2))
             endif
         enddo
-        
+        write(*,*) compfases(1,1),compfases(2,1),compfases(3,1),compfases(4,1),&
+        compfases(5,1),compfases(6,1),compfases(7,1)
+        write(*,*) agam(1,1),agam(2,1),agam(3,1),agam(4,1),&
+        agam(5,1),agam(6,1),agam(7,1)
         !c�lculo de Keq(clac)
         Keqcalc(1) = act(3)*act(6)/(act(2)*act(1))
         Keqcalc(2) = act(4)*act(6)/(act(3)*act(1))
@@ -95,9 +98,9 @@ doubleprecision function f(x,n)
         
         !Acido Oleico 6 (T = 393.15-483.15 K) Promedio
 
-        Kexp(1) = 0.8382134564!0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
-        Kexp(2) = 1.938223665!0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
-        Kexp(3) = 3.958402258!0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
+        Kexp(1) = 0.33274673!0.002157910*exp((-5861.4)*((1/T)-(1/298.15)))
+        Kexp(2) = 1.373980!0.000339003*exp((-8253.8)*((1/T)-(1/298.15)))
+        Kexp(3) = 0.249791!0.000206217*exp((-7568.0)*((1/T)-(1/298.15)))
         
         f = 0.
         do i=1,size(Keqcalc)

@@ -38,9 +38,9 @@ subroutine conversion(zf)
     variables = 3
     allocate(x(variables))
     allocate(xcic(variables))
-    x(1) = z(2)/(z(2) + z(3) + z(4) +z(5))
-    x(2) = z(3)/(z(2) + z(3) + z(4) +z(5))
-    x(3) = z(4)/(z(2) + z(3) + z(4) +z(5))
+    x(1) = 0.1926 !z(2)/(z(2) + z(3) + z(4) +z(5))
+    x(2) = 0.2965 !z(3)/(z(2) + z(3) + z(4) +z(5))
+    x(3) = 0.4394 !z(4)/(z(2) + z(3) + z(4) +z(5))
     
     fobj = .false. !se llama desde conversion
     
@@ -177,9 +177,17 @@ subroutine genDatExtr(x,n,extI,extS,temp)
    !         endif
    !     else
             !Escribe en el documento de salida las condiciones
-        !open(unit=3333,file="salida3.out",status="old")
-            write(333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6)
-         !   close(unit=3333)
+        open(unit=3333,file="salida3.out",status="old")
+            write(3333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
+            write(*,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
+            write(*,*) "Acido: ",zf(1)
+            write(*,*) "Gly: ", zf(2)
+            write(*,*) "Mono: ", zf(3)
+            write(*,*) "Di: ", zf(4)
+            write(*,*) "Tri: ", zf(5)
+            write(*,*) "Agua: ", zf(6)
+            write(*,*) "Tol: ", zf(7)
+            close(unit=3333)
             i = i + camb
    !     endif
  !   enddo
