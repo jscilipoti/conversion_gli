@@ -178,7 +178,7 @@ subroutine genDatExtr(x,n,extI,extS,temp)
    !     else
             !Escribe en el documento de salida las condiciones
         open(unit=3333,file="salida3.out",status="old")
-            write(3333,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
+            write(3333,*) i,";",zf(1),";",zf(2),";",zf(3),";",zf(4),";",zf(5),";",zf(6),";",zf(7)
             write(*,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
             write(*,*) "Acido: ",zf(1)
             write(*,*) "Gly: ", zf(2)
