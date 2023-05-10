@@ -4,6 +4,9 @@ license = "license"
 author = "jscilipoti"
 maintainer = "jscilipoti@gmail.com"
 copyright = "Copyright 2023, jscilipoti"
+fortran.implicit-typing = true
+fortran.implicit-external = true
+fortran.source-form = "free"
 [build]
 auto-executables = true
 auto-tests = true
