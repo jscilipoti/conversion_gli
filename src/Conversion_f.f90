@@ -49,7 +49,7 @@ subroutine conversion(zf)
     write(*,*) FMIN
     write(*,*)
     
-    esp = 23
+    esp = 23 
     
     minmar = 0.0001
     
