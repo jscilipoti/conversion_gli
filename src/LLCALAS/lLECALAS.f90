@@ -253,9 +253,9 @@
         write(output,2613) (AL(j),j=1,N)        
       write(output,*) "SYSTEM IS STABLE"                                                   
 
-	 write(7,46) T,  (xM(l,1),l=1,N)    !Alfonsina
-	 write(7,46) T,  (xM(l,2),l=1,N)!Alfonsina
-	 write(7,*)                    !Alfonsina
+!	 write(7,46) T,  (xM(l,1),l=1,N)    !Alfonsina
+!	 write(7,46) T,  (xM(l,2),l=1,N)!Alfonsina
+!	 write(7,*)                    !Alfonsina
 
 
 
