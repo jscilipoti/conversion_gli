@@ -1,39 +1,47 @@
-   subroutine llecalas(Tf, Pf, Zf) 
-! Temperatura, presion, composicion, nro de componentes
-! *******************************************************************  
-! *                                                                 *  
-! *  PROGRAM   L L E C A L A S                                      *  
-! *  (asociacion incorporada para el calculo de flash y             *  
-! *  curva binodal (icalc 0 y 1)                                    *
-! *                                                                 *
-! *                       ASOCIACION CRUZADA					           *		  
-! *                      VERSION GENERALIZADA                       *        
-! *                          Junio 2023                             *
-! *  MODIFICADA POR:                                                *
-! *                    ALFONSINA  ESTER ANDREATTA                   *
-! *                    JOSE ANTONIO SCILIPOTI                       *  
-! *                    JUAN PABLO ROVEZZI                           *
-! *       Revisada en Octubre del 2007 en el chequeo de estabilidad *
-! *                                                                 *  
-! *        BASADA EN LAS SIMPLIFICACIONES DE LOS PAPERS:            * 	
-! *  Michelsen, et al. (Fluid Phase Equilibria, 180(2001)165-174 )  *		
-! *  Tan, et al.  (Ind. Eng. Chem. Res, 2004, 43, 203-208).			  *	   	
-! *																                 *	   	
-! *        Esto permitio  que todos los casos particulares          *         
-! *       de asociacion se puedan simplificar a un unico calculo.   * 
-! *                                                                 *
-! *  Valido para un maximo numero grupo asociativo de 12.           *
-! *  Con la implementacion en el calculo de la fraccion no asociada *   
-! *  en el componente puro por  el metodo iterativo aqui            *
-! *  implementado se permite queuna molecula tenga mas de un grupo  *
-! *  asociativo 14/07/06.                                           * 
-! *  El calculo se limita a que el numero maximo de sitios sea      * 
-! *  dos (por razones matematicas).                                 *
-! *                                                                 *                                                   
-! *******************************************************************  
-! *                                           DATE: 24/3 - 1982 /TJ *
-! *******************************************************************
-   
+! *****************************************************************************
+! *   Subroutine: llecalas(Tf, Pf, Zf)                                        *
+! *****************************************************************************
+!
+subroutine llecalas(Tf, Pf, Zf) 
+!
+! *****************************************************************************  
+! *                                                                           *  
+! *  PROGRAM   L L E C A L A S                                                *  
+! *  (asociacion incorporada para el calculo de flash y                       *  
+! *  curva binodal (icalc 0 y 1)                                              *
+! *                                                                           *                          
+! *                           ASOCIACION CRUZADA					               *		  
+! *                          VERSION GENERALIZADA                             *        
+! *                              Junio 2023                                   *
+! *   Modificada por:                                                         *
+! *                        ALFONSINA  ESTER ANDREATTA                         *   
+! *                          JOSE ANTONIO SCILIPOTI                           *  
+! *                           JUAN PABLO ROVEZZI                              *
+! *   Revisada en Octubre del 2007 en el chequeo de estabilidad               *
+! *                                                                           *  
+! *   Basada en las simplificaciones de los papers:                           * 	
+! *      # Michelsen, et al. (Fluid Phase Equilibria, 180(2001)165-174 )      *		
+! *      # Tan, et al.  (Ind. Eng. Chem. Res, 2004, 43, 203-208).			      *	   	
+! *																                           *	   	
+! *   Esto permitio  que todos los casos particulares de asociacion se puedan *         
+! *   simplificar a un unico calculo.                                         * 
+! *                                                                           *
+! *   Valido para un maximo numero grupo asociativo de 12.                    *
+! *   Con la implementacion en el calculo de la fraccion no asociada en el    *   
+! *   componente puro por  el metodo iterativo aqui implementado se permite   *
+! *   que una molecula tenga mas de un grupo asociativo (14/07/06).           *
+! *                                                                           * 
+! *   El calculo se limita a que el numero maximo de sitios sea dos           * 
+! *   (por razones matematicas).                                              *
+! *                                                                           *                                                   
+! *****************************************************************************  
+! *                        DATE: 24/3/1982 /TJ                                *
+! *****************************************************************************
+! 
+!  Tf: Temperatura, 
+!  Pf: presion, 
+!  Zf: composicion, nro de componentes
+
       use InputData
       use flashout
       IMPLICIT REAL*8(A-H, O-Z)      !C QUITAR                                    
@@ -569,7 +577,8 @@
       if (MASS(J).NE.0) then      
       do K = 1, MASS(J)
 	if(XOH(K, J).gt.1d-13)then
-      SUMAJ = SUMAJ + RNGOH(i, j)*(dlog(XOH(K, J)/XOHI0(I, K, J))+0.5D0*(XOHi0(i, K, J)-1))+0.5D0*R(i)*xnoh(j)*(1-xoh(k, j))
+      SUMAJ = SUMAJ + RNGOH(i, j)*(dlog(XOH(K, J)/XOHI0(I, K, J))&
+      +0.5D0*(XOHi0(i, K, J)-1))+0.5D0*R(i)*xnoh(j)*(1-xoh(k, j))
 	end if
       enddo
       else
