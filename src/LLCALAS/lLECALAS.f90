@@ -117,7 +117,6 @@ subroutine llecalas(Tf, Pf, Zf)
       T = Tf
       PP = Pf
       if (T.EQ.0.) goto 10000 
-      !if (PP.EQ.0..OR.NOVAP.EQ.0) then !reemplazado por la siguiente estructura
       if (PP/=  0..and.NOVAP/=  0) then                                 
         do 1 I = 1, N                                                        
     1       PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))                                                    
@@ -368,7 +367,7 @@ subroutine llecalas(Tf, Pf, Zf)
 
                                                                     
       endsubroutine llecalas   
-                                                                  
+!###############################################################################                                                                 
       subroutine unifac(NDIF, X, ACT, DACT, PACT)                           
       IMPLICIT REAL*8(A-H, O-Z)                                          
 
