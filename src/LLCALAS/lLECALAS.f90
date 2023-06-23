@@ -97,9 +97,7 @@ subroutine llecalas(Tf, Pf, Zf)
       OPEN (UNIT = 3, FILE = 'output.OUT', FORM = 'FORMATTED')
 	   output = 3                                                  
       if (IOUT.EQ.0) IOUT = 6                                                                                
-      if (IOUT.EQ.6) then 
-         goto 5 !C Corregir
-      else
+      if (.not.(IOUT.EQ.6)) then 
          write(IOUT, 608)                                                   
          write(IOUT, 610)                                                   
          if (ICALC.EQ.0) write(IOUT, 620)                                    
@@ -143,13 +141,13 @@ subroutine llecalas(Tf, Pf, Zf)
       Y21 = Z(2)                                                          
       !write(6, 633) T                                                    
       if (IOUT.NE.6) write(IOUT, 633) T                                   
-      if (.not.N.EQ.3) then                                                
+      if (.not.(N.EQ.3)) then                                                
          call SOLBIN                                                       
          if(IOUT.EQ.1) CLOSE (UNIT = 1)
          close (unit = 3)
          return
       endif   
-                                                          
+
    12 STEP = Z(3)/100.D0                                                  
       if (STEP.EQ.0.) STEP = .02D0                                         
       call BINOD                                                        
@@ -176,11 +174,14 @@ subroutine llecalas(Tf, Pf, Zf)
       READ(2, *) R(2), Q(2)                                                                                    
       write(6, 627)                                                      
       do 14 I = 1, 2                                                       
-   14   write(6, 626) I, R(I), Q(I)                                          
-      if (IOUT.EQ.6) goto 13                                             
-      write(IOUT, 627)                                                   
-      do 11 I = 1, 2                                                       
-   11   write(IOUT, 626) I, R(I), Q(I)                                       
+   14   write(6, 626) I, R(I), Q(I)   
+
+      if (.not.(IOUT.EQ.6)) then                                             
+         write(IOUT, 627)                                                   
+         do 11 I = 1, 2
+            11   write(IOUT, 626) I, R(I), Q(I)  
+      endif
+
    13 continue                                                          
       X(1) = Z(1)/300.D0                                                  
       X(2) = Z(2)/300.D0                                                  
@@ -212,7 +213,10 @@ subroutine llecalas(Tf, Pf, Zf)
       if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
       if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)              
    22 continue                                                          
-      goto 10000                                                        
+      if(IOUT.EQ.1) CLOSE (UNIT = 1)
+      close (unit = 3)
+      return
+
    19 continue                                                          
       do 20 I = 1, N                                                       
         do 20 J = 1, N                                                       
