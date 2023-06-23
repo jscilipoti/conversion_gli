@@ -119,18 +119,21 @@ subroutine llecalas(Tf, Pf, Zf)
          close (unit = 3)
          return
       endif
-      if (PP/=  0..and.NOVAP/=  0) then                                 
-        do 1 I = 1, N                                                        
-    1       PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))                                                    
+      if (PP/=  0..and.NOVAP/=  0) then
+         do I = 1, N
+         PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))
+         enddo                                                    
       endif       
       Z(:) = Zf(:)
       ZSUM = 0.                                                           
       ZMAX = 0.                                                           
-      do 15 I = 1, N                                                       
-        ZSUM = ZSUM+Z(I)                                                    
-        if (Z(I).LT.ZMAX) cycle !goto 15                                          
-        ZMAX = Z(I)                                                         
-        MAXZ = I                                                            
+      do I = 1, N                                                       
+         ZSUM = ZSUM+Z(I)                                                    
+         if (Z(I).LT.ZMAX) cycle                                          
+         ZMAX = Z(I)                                                         
+         MAXZ = I
+         continue
+      enddo                                                            
    15 continue                                                          
       if (T.EQ.T1) goto 30                                               
       call PARAM2                                                       
@@ -164,18 +167,19 @@ subroutine llecalas(Tf, Pf, Zf)
       XC(3) = .5D0                                                        
       XC(4) = .8D0                                                        
       XC(5) = 1.D0                                                        
-      do 17 K = 1, 5                                                       
-        Y(1) = XC(K)                                                        
-        Y(2) = 1.D0-XC(K)                                                   
-        call unifac(1, Y, ACT1, DACT1, PACT)                                  
-        GE(K, 1) = ACT1(1)                                                   
-   17   GE(K, 2) = ACT1(2)                                                   
+      do K = 1, 5                                                      
+         Y(1) = XC(K)                                                        
+         Y(2) = 1.D0-XC(K)                                                   
+         call unifac(1, Y, ACT1, DACT1, PACT)                                  
+         GE(K, 1) = ACT1(1)                                                   
+         GE(K, 2) = ACT1(2)
+      enddo                                                   
       READ(2, *) R(1), Q(1)                                               
       READ(2, *) R(2), Q(2)                                                                                    
       write(6, 627)                                                      
-      do 14 I = 1, 2                                                       
-   14   write(6, 626) I, R(I), Q(I)   
-
+      do I = 1, 2                                                       
+         write(6, 626) I, R(I), Q(I)   
+      enddo
       if (.not.(IOUT.EQ.6)) then                                             
          write(IOUT, 627)                                                   
          do 11 I = 1, 2
@@ -185,10 +189,12 @@ subroutine llecalas(Tf, Pf, Zf)
    13 continue                                                          
       X(1) = Z(1)/300.D0                                                  
       X(2) = Z(2)/300.D0                                                  
-      do 18 I = 1, 2                                                       
-        do 18 J = 1, 2                                                       
+      do I = 1, 2                                                       
+         do J = 1, 2                                                       
             QT(I, J) = 0.                                                        
-   18       P(I, J) = 0.                                                         
+            P(I, J) = 0.                                                         
+        enddo
+      enddo
       QT(1, 1) = Q(1)                                                      
       QT(2, 2) = Q(2)                                                      
       NK = 2                                                              
