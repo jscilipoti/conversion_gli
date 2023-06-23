@@ -111,7 +111,7 @@ subroutine llecalas(Tf, Pf, Zf)
          write(IOUT, 623) NTEXT  
       endif                                                                                
     5 continue                                                          
-    !  CALL PARIN2     hago que se llame desde el main                                                                                                   
+    !  call PARIN2     hago que se llame desde el main                                                                                                   
       T1 = 0.                                                             
       NN = 0                                                              
       T = Tf
@@ -131,7 +131,7 @@ subroutine llecalas(Tf, Pf, Zf)
         MAXZ = I                                                            
    15 continue                                                          
       if (T.EQ.T1) goto 30                                               
-      CALL PARAM2                                                       
+      call PARAM2                                                       
       if (ICALC.NE.1) goto 16                                            
       if (N.NE.2.AND.N.NE.3) write(6, 616)                                
       if (IOUT.NE.6.AND.N.NE.2.AND.N.NE.3) write(IOUT, 616)               
@@ -139,12 +139,15 @@ subroutine llecalas(Tf, Pf, Zf)
       Y21 = Z(2)                                                          
       !write(6, 633) T                                                    
       if (IOUT.NE.6) write(IOUT, 633) T                                   
-      if (N.EQ.3) goto 12                                                
-      CALL SOLBIN                                                       
-      goto 10000                                                        
+      if (.not.N.EQ.3) then                                                
+         call SOLBIN                                                       
+         if(IOUT.EQ.1) CLOSE (UNIT = 1)
+         close (unit = 3)
+         return
+      endif                                                       
    12 STEP = Z(3)/100.D0                                                  
       if (STEP.EQ.0.) STEP = .02D0                                         
-      CALL BINOD                                                        
+      call BINOD                                                        
       goto 10000                                                        
    16 continue                                                          
       if (ICALC.NE.2) goto 19                                            
@@ -158,7 +161,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 17 K = 1, 5                                                       
         Y(1) = XC(K)                                                        
         Y(2) = 1.D0-XC(K)                                                   
-        CALL unifac(1, Y, ACT1, DACT1, PACT)                                  
+        call unifac(1, Y, ACT1, DACT1, PACT)                                  
         GE(K, 1) = ACT1(1)                                                   
    17   GE(K, 2) = ACT1(2)                                                   
       READ(2, *) R(1), Q(1)                                               
@@ -182,7 +185,7 @@ subroutine llecalas(Tf, Pf, Zf)
       NK = 2                                                              
       NG = 2                                                              
       XLAMB = 1.                                                          
-      CALL MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
+      call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
       write(6, 633) T                                                    
       if (IOUT.NE.6) write(IOUT, 633) T                                   
       write(6, 617) P(1, 2), P(2, 1)       
@@ -207,7 +210,7 @@ subroutine llecalas(Tf, Pf, Zf)
         do 20 J = 1, N                                                       
             GAM(I, J) = 0.D0                                                     
             if (J.EQ.I) goto 20                                                
-            CALL GAMINF(I, J, G)                                                
+            call GAMINF(I, J, G)                                                
             GAM(I, J) = G                                                        
    20 continue                                                          
    30 T1 = T                                                              
@@ -216,7 +219,7 @@ subroutine llecalas(Tf, Pf, Zf)
    35 Z(I) = Z(I)/ZSUM                                                                                 
       if (IOUT.NE.6) write(IOUT, 602) NN                                  
       if (IOUT.NE.6) write(IOUT, 605) T, PP, ZSUM, (Z(I), I = 1, N)              
-      CALL unifac(1, Z, AL, DA, PACT)                                       
+      call unifac(1, Z, AL, DA, PACT)                                       
       SFAS(1) = 1.                                                        
       GNUL = 0.                                                           
       do 40 I = 1, N                                                       
@@ -226,7 +229,7 @@ subroutine llecalas(Tf, Pf, Zf)
         A(I) = AL(I)+DLX(I)                                                 
    40   GNUL = GNUL+Z(I)*AL(I)                                              
       NF = 1                                                              
-   50 CALL STIG(Y, S)                                                    
+   50 call STIG(Y, S)                                                    
       if (S.GT.-1.D-7) goto 70                                                                                              
       if (IOUT.NE.6) write(IOUT, 603)                                     
       do 60 I = 1, N                                                       
@@ -238,7 +241,7 @@ subroutine llecalas(Tf, Pf, Zf)
       XLAM = 1.                                                                              
       if (IOUT.NE.6.AND.NF.EQ.1.AND.IPR.GT.0) write(IOUT, 606)            
       if (IOUT.NE.6.AND.NF.GT.1.AND.IPR.GT.0) write(IOUT, 609) NF         
-      CALL TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+      call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
       if (FUN.LT.-1.D-7) goto 80                                         
       write(output, *) 1
         write(output, 2613) (Z(j), J = 1, N)
@@ -269,7 +272,7 @@ subroutine llecalas(Tf, Pf, Zf)
       if (NF.EQ.2) XLAM = .5                                               
       M = (NF-1)*N                                                                                          
       if (IOUT.NE.6.AND.IPR.GT.0) write(IOUT, 607) NF                     
-      CALL TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
+      call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
       NT = NF*N                                                           
       NB = NT-N                                                           
       do 110 I = 1, NB                                                     
@@ -288,7 +291,7 @@ subroutine llecalas(Tf, Pf, Zf)
         DLX(I) = XVL(I, NF)*Z(I)/SFAS(NF)                                    
   115   SUM = SUM+DLX(I)                                                    
       SUM = DLOG(SUM)                                                     
-      CALL unifac(1, DLX, A, DA, PACT)                                      
+      call unifac(1, DLX, A, DA, PACT)                                      
       do 120 I = 1, N                                                      
         DLX(I) = DLOG(DLX(I))                                               
   120   A(I) = A(I)+DLX(I)-SUM                                              
@@ -989,7 +992,7 @@ subroutine llecalas(Tf, Pf, Zf)
       	    if(model == 2) then
               if(ICS.NE.0) then !GRUPOS ASOCIATIVOS
                 NG = MS(J, I, 1)
-                CALL BUSCARAS (NG, NGRUPA, NMG, VL)
+                call BUSCARAS (NG, NGRUPA, NMG, VL)
                 if (VL)then
                     if (MS(J, I, 1).EQ.10) then
                         RNGOH(J, NPUNTA(NG)) = CANIL(J)
@@ -1017,7 +1020,7 @@ subroutine llecalas(Tf, Pf, Zf)
                 NPUNT(MS(J, I, 1)) = NUM
                 NGRUP(NUM) = MS(J, I, 1)
                ! RR(NUM) = RRT
-                CALL BUSCARAS (MGR, NMAINGR, NMG, VL)
+                call BUSCARAS (MGR, NMAINGR, NMG, VL)
                 if (.NOT.VL) then !Crea vectores NPUNTMG y NMAINGR
                     NMGR = NMGR+1
                     NPUNTMG(MGR) = NMGR
@@ -1042,11 +1045,11 @@ subroutine llecalas(Tf, Pf, Zf)
                 do AA = 1, CS(K)
                     IREC1 = MAINSGfunc(NGRUPA(K), IPAREQ)+(ipareq-1)*70
                     if (TS(J, BB).EQ.1.OR.TS(K, AA).EQ.1)then !Si alguno de ambos sitios es del tipo 1
-                       CALL LEEPAR (J, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
+                       call LEEPAR (J, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
                        ENASS(AA, K, BB, J) = ENASST
                        RKASS(AA, K, BB, J) = RKASST                        
                     ELSEIF (TS(J, BB).NE.TS(K, AA)) then
-                       CALL LEEPAR (J, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
+                       call LEEPAR (J, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
                        ENASS(AA, K, BB, J) = ENASST
                        RKASS(AA, K, BB, J) = RKASST
                     else 
@@ -1324,7 +1327,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 43 K = 1, NA                                                      
       do 36 I = 1, N                                                       
    36 Y(I) = Y(I)/SUM                                                     
-      CALL unifac(1, Y, AA, DA, PACT)                                       
+      call unifac(1, Y, AA, DA, PACT)                                       
       if (K.EQ.NA) goto 44                                               
       do 41 I = 1, N                                                       
    41 Y(I) = DEXP(A(I)-AA(I))                                             
@@ -1375,7 +1378,7 @@ subroutine llecalas(Tf, Pf, Zf)
       N = NARG/NG                                                         
       JD = 1                                                              
       if (NDIF.EQ.2) JD = 2                                                
-      if (NDIF.EQ.2) CALL CHECK(N, YVAL)                                  
+      if (NDIF.EQ.2) call CHECK(N, YVAL)                                  
       if (NF.NE.NG) goto 20                                              
       NARG = NARG-N                                                       
       NG = NG-1                                                           
@@ -1402,7 +1405,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 65 I = 1, N                                                       
       XX(I) = X(I)/SFAS(J)                                                
    65 XM(I, J) = XX(I)                                                     
-      CALL unifac(JD, XX, FG, DA, PACT)                                     
+      call unifac(JD, XX, FG, DA, PACT)                                     
       IDUM(J) = NDUM                                                      
       do 70 I = 1, N                                                       
       TM(I) = DLOG(XVL(I, J)/SFAS(J))+FG(I)                                
@@ -1454,7 +1457,7 @@ subroutine llecalas(Tf, Pf, Zf)
    15 XEX(I) = YEX(I)/SUM                                                 
       JD = 1                                                              
       if (NDIF.EQ.2) JD = 2                                                
-      CALL unifac(JD, XEX, AL, DA, PACT)                                    
+      call unifac(JD, XEX, AL, DA, PACT)                                    
       FUN = 1.                                                            
       do 20 I = 1, N                                                       
       S = Y(I)+AL(I)-A(I)                                                 
@@ -1625,9 +1628,9 @@ subroutine llecalas(Tf, Pf, Zf)
       GNM = 0.                                                            
       
       if(ifunc == 1)then
-        CALL STABIL(N, 2, F, GD, G, X)                                       
+        call STABIL(N, 2, F, GD, G, X)                                       
       elseif(ifunc == 2)then
-        CALL GMIX(N, 2, F, GD, G, X)  
+        call GMIX(N, 2, F, GD, G, X)  
       endif
       do 5 I = 1, N                                                        
     5 GNM = GNM+GD(I)**2                                                  
@@ -1642,11 +1645,11 @@ subroutine llecalas(Tf, Pf, Zf)
       if(S.GT. BETA) BETA = S                                            
    10 W(I, 1) = 0.                                                         
       BETA = DSQRT(BETA/N)                                                
-      CALL SPLIT(ND, N, IDI, BETA, DEL, G, W)                                 
+      call SPLIT(ND, N, IDI, BETA, DEL, G, W)                                 
       XLM = 0.                                                            
       NTS = 0                                                             
   350 NTS = NTS+1                                                         
-      CALL LINE(ND, N, XLM, GD, G, W)                                        
+      call LINE(ND, N, XLM, GD, G, W)                                        
       SMAX = 0.                                                           
       GP = 0.                                                             
       DP = 0.                                                             
@@ -1665,9 +1668,9 @@ subroutine llecalas(Tf, Pf, Zf)
   215 X(I) = W(I, 4)+FF*W(I, 3)                                             
  
        if(ifunc == 1)then
-        CALL STABIL(N, 1, FNEW, GD, G, X)                           
+        call STABIL(N, 1, FNEW, GD, G, X)                           
       elseif(ifunc == 2)then
-        CALL GMIX(N, 1, FNEW, GD, G, X)   
+        call GMIX(N, 1, FNEW, GD, G, X)   
       endif
  
       cont = cont + 1
@@ -1747,7 +1750,7 @@ subroutine llecalas(Tf, Pf, Zf)
       Y(2) = 0.D0                                                         
       Y(3) = Y21/100.D0                                                   
       Y(4) = 0.D0                                                         
-   12 CALL SOLVE(Y, DY, NOLD, NEW, NITER, N, NT)                              
+   12 call SOLVE(Y, DY, NOLD, NEW, NITER, N, NT)                              
       if (NITER.LE.NT) goto 16                                           
       if (N.GT.0) goto 19                                                
       ICOND = -10                                                         
@@ -1800,7 +1803,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 11 J = 1, 3                                                       
 11    Y(I) = ST*Y(I)+DMAT(I, 4-J)                                          
       if (IHALF.GT.0)goto 12                                             
-      CALL TERM(Y, DMAT, ICOND, NEW)                                       
+      call TERM(Y, DMAT, ICOND, NEW)                                       
       NOLD = NEW                                                          
       if (ICOND.EQ.0.OR.ICOND.EQ.2) goto 12                              
 3     NGIT = N                                                            
@@ -1887,8 +1890,8 @@ subroutine llecalas(Tf, Pf, Zf)
       Y2(3) = 1.D0-Y2(1)-Y2(2)                                            
       if (Y1(3).LT.0.)Y1(3) = 0.                                           
       if (Y2(3).LT.0.) Y2(3) = 0.                                          
-      CALL unifac(3, Y1, ACT1, DACT1, PACT)                                 
-      CALL unifac(3, Y2, ACT2, DACT2, PACT)                                 
+      call unifac(3, Y1, ACT1, DACT1, PACT)                                 
+      call unifac(3, Y2, ACT2, DACT2, PACT)                                 
       J = 0                                                               
       do 6 I = 1, 4                                                        
       if (I.EQ.NOLD)goto 6                                               
@@ -1904,7 +1907,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 9 J = 1, 3                                                        
 9     AMAT(I, J) = AMAT(I, INO(J))                                          
 8     AMAT(I, 4) = ACT1(I)-ACT2(I)                                         
-      CALL GAUSL(3, 5, 3, 2, AMAT)                                          
+      call GAUSL(3, 5, 3, 2, AMAT)                                          
       RES = 0.D0                                                          
       do 10 I = 1, 3                                                       
       Y(INO(I)) = Y(INO(I))-AMAT(I, 4)                                     
@@ -1916,11 +1919,11 @@ subroutine llecalas(Tf, Pf, Zf)
       if (Y1(I).LT.1.D-14) IZ = 1                                          
    14 if (Y2(I).LT.1.D-14) IZ = 1                                          
       if (IZ.EQ.1) goto 13                                               
-      CALL GCON(3, Y1, ACT1, DACT1, ICVEX)                                  
+      call GCON(3, Y1, ACT1, DACT1, ICVEX)                                  
       if (ICVEX.EQ.1) goto 15                                            
       NIC1 = NIC1+1                                                       
       IC1(NIC1) = N+1                                                     
-   15 CALL GCON(3, Y2, ACT2, DACT2, ICVEX)                                  
+   15 call GCON(3, Y2, ACT2, DACT2, ICVEX)                                  
       if (ICVEX.EQ.1) goto 13                                            
       NIC2 = NIC2+1                                                       
       IC2(NIC2) = N+1                                                     
@@ -2023,13 +2026,13 @@ subroutine llecalas(Tf, Pf, Zf)
       if (X2(1).LT.0.D0) X2(1) = 0.D0                                      
       X1(2) = 1.D0-X1(1)                                                  
       X2(2) = 1.D0-X2(1)                                                  
-      CALL unifac(3, X1, ACT1, DACT1, PACT)                                 
-      CALL unifac(3, X2, ACT2, DACT2, PACT)                                 
+      call unifac(3, X1, ACT1, DACT1, PACT)                                 
+      call unifac(3, X2, ACT2, DACT2, PACT)                                 
       do 20 I = 1, 2                                                       
       DMAT(I, 1) = DACT1(I, 1)-DACT1(I, 2)                                   
       DMAT(I, 2) = DACT2(I, 2)-DACT2(I, 1)                                   
    20 DMAT(I, 3) = ACT1(I)-ACT2(I)                                         
-      CALL GAUSL(2, 3, 2, 1, DMAT)                                          
+      call GAUSL(2, 3, 2, 1, DMAT)                                          
       RES = DMAT(1, 3)**2+DMAT(2, 3)**2                                     
       X1(1) = X1(1)-DMAT(1, 3)                                             
       X2(1) = X2(1)-DMAT(2, 3)                                             
@@ -2041,10 +2044,10 @@ subroutine llecalas(Tf, Pf, Zf)
       write(6, 604) X1(1), X2(1), X1(2), X2(2)                              
   603 format(///, 5X, '** BINARY SOLUBILITIES IN MOLE FRACTIONS **', //, 11X, 'COMPONENT 1', 15X, 'COMPONENT 2', /)                               
   604 format(2(2X, 2P2D12.2)//)                                          
-      CALL GCON(2, X1, ACT1, DACT1, ICVEX)                                  
+      call GCON(2, X1, ACT1, DACT1, ICVEX)                                  
       if (IOUT.NE.6.AND.ICVEX.EQ.-1) write(IOUT, 601)                     
       if (ICVEX.EQ.-1) write(6, 601)                                      
-      CALL GCON(2, X2, ACT2, DACT2, ICVEX)                                  
+      call GCON(2, X2, ACT2, DACT2, ICVEX)                                  
       if (IOUT.NE.6.AND.ICVEX.EQ.-1) write(IOUT, 602)                     
       if (ICVEX.EQ.-1) write(6, 602)                                      
   601 format(' FALSE SOLUTION IN PHASE 1')                              
@@ -2062,7 +2065,7 @@ subroutine llecalas(Tf, Pf, Zf)
       if (NDIF.EQ.1) JD = 4                                                
       P(1, 2) = X(1)*300.D0                                                
       P(2, 1) = X(2)*300.D0                                                
-      CALL PARAM2                                                       
+      call PARAM2                                                       
       SSQ = 0.                                                            
       if (NDIF.EQ.0) goto 11                                             
       do 10 I = 1, 2                                                       
@@ -2073,7 +2076,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 21 L = 1, 5                                                       
       Y1(1) = XC(L)                                                       
       Y1(2) = 1.D0-XC(L)                                                  
-      CALL unifac(JD, Y1, ACT1, DACT1, PACT)                                
+      call unifac(JD, Y1, ACT1, DACT1, PACT)                                
       do 17 I = 1, 2                                                       
       F(I) = ACT1(I)-GE(L, I)                                              
       GC(L, I) = ACT1(I)                                                   
@@ -2101,13 +2104,13 @@ subroutine llecalas(Tf, Pf, Zf)
       ITER = 0                                                            
       if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 603)                        
       if (IPR.EQ.1) write(6, 603)                                         
-      CALL FUNC(N, M, 1, X, SRES)                                           
+      call FUNC(N, M, 1, X, SRES)                                           
       IEVAL = IEVAL+1                                                     
       SSQ = SRES                                                          
       if (IPR.EQ.1.AND.IOUT.NE.6) write(IOUT, 601) ITER, SSQ               
       if (IPR.EQ.1) write(6, 601) ITER, SSQ                                
    10 continue                                                          
-      if (IEVAL.NE.1) CALL FUNC(N, M, 1, X, SRES)                            
+      if (IEVAL.NE.1) call FUNC(N, M, 1, X, SRES)                            
       GNORM = 0.D0                                                        
       do 140 I = 1, N                                                      
   140 GNORM = GNORM+GRAD(I)**2                                            
@@ -2121,7 +2124,7 @@ subroutine llecalas(Tf, Pf, Zf)
       do 40 J = 1, N                                                       
    40 A(I, J) = XJTJ(I, J)                                                  
    41 A(I, I) = A(I, I)+XLAMB                                               
-      CALL CHOL(N, A)                                                    
+      call CHOL(N, A)                                                    
       Y(1) = -GRAD(1)/A(1, 1)                                              
       do 81 I = 2, N                                                       
       SUM = 0.D0                                                          
@@ -2139,7 +2142,7 @@ subroutine llecalas(Tf, Pf, Zf)
    85 DX(II) = (Y(II)-SUM)/A(II, II)                                       
       do 90 I = 1, N                                                       
    90 XNY(I) = X(I)+DX(I)                                                 
-      CALL FUNC(N, M, 0, XNY, SRES)                                         
+      call FUNC(N, M, 0, XNY, SRES)                                         
       IEVAL = IEVAL+1                                                     
       SSQNY = SRES                                                        
       SQ1 = 0.D0                                                          
