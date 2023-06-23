@@ -116,7 +116,11 @@ subroutine llecalas(Tf, Pf, Zf)
       NN = 0                                                              
       T = Tf
       PP = Pf
-      if (T.EQ.0.) goto 10000 
+      if (T.EQ.0.) then
+         if(IOUT.EQ.1) CLOSE (UNIT = 1)
+         close (unit = 3)
+         return
+      endif
       if (PP/=  0..and.NOVAP/=  0) then                                 
         do 1 I = 1, N                                                        
     1       PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))                                                    
@@ -144,11 +148,15 @@ subroutine llecalas(Tf, Pf, Zf)
          if(IOUT.EQ.1) CLOSE (UNIT = 1)
          close (unit = 3)
          return
-      endif                                                       
+      endif   
+                                                          
    12 STEP = Z(3)/100.D0                                                  
       if (STEP.EQ.0.) STEP = .02D0                                         
       call BINOD                                                        
-      goto 10000                                                        
+      if(IOUT.EQ.1) CLOSE (UNIT = 1)
+      close (unit = 3)
+      return
+      
    16 continue                                                          
       if (ICALC.NE.2) goto 19                                            
       if (N.NE.2) write(6, 616)                                           
