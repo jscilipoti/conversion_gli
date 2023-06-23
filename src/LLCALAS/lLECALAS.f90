@@ -207,12 +207,15 @@ subroutine llecalas(Tf, Pf, Zf)
    21       GC(L, I) = DEXP(GC(L, I))                                             
       if (IPR.EQ.1) write(6, 619) ((GE(L, I), L = 1, 5), I = 1, 2)                 
       if (IPR.EQ.1) write(6, 619) ((GC(L, I), L = 1, 5), I = 1, 2)                 
-      if (IOUT.EQ.6) goto 22                                             
-      write(IOUT, 617) P(1, 2), P(2, 1)                                     
-      if (IPR.EQ.1) write(IOUT, 618)                                      
-      if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
-      if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)              
-   22 continue                                                          
+      
+      if (.not.(IOUT.EQ.6)) then                                             
+         write(IOUT, 617) P(1, 2), P(2, 1)                                     
+         if (IPR.EQ.1) write(IOUT, 618)                                      
+         if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
+         if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)
+      endif              
+   
+      22 continue                                                          
       if(IOUT.EQ.1) CLOSE (UNIT = 1)
       close (unit = 3)
       return
