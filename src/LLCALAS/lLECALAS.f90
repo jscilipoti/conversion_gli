@@ -207,10 +207,13 @@ subroutine llecalas(Tf, Pf, Zf)
       !(///, ' ** UNIQUAC PARAMETERS FROM UNIFAC **',
       !//, 5X, 'A12/R = ', F12.3, ' K , A21/R = ', F12.3, ' K', ///)                                  
       if (IPR.EQ.1) write(6, 618)                                         
-      do 21 L = 1, 5                                                       
-        do 21 I = 1, 2                                                       
+      do L = 1, 5                                                       
+         do I = 1, 2                                                       
             GE(L, I) = DEXP(GE(L, I))                                             
-   21       GC(L, I) = DEXP(GC(L, I))                                             
+            GC(L, I) = DEXP(GC(L, I))
+         enddo
+      enddo 
+
       if (IPR.EQ.1) write(6, 619) ((GE(L, I), L = 1, 5), I = 1, 2)                 
       if (IPR.EQ.1) write(6, 619) ((GC(L, I), L = 1, 5), I = 1, 2)                 
       
@@ -227,59 +230,76 @@ subroutine llecalas(Tf, Pf, Zf)
       return
 
    19 continue                                                          
-      do 20 I = 1, N                                                       
-        do 20 J = 1, N                                                       
+      do I = 1, N                                                       
+         do J = 1, N                                                       
             GAM(I, J) = 0.D0                                                     
-            if (J.EQ.I) goto 20                                                
-            call GAMINF(I, J, G)                                                
-            GAM(I, J) = G                                                        
+            if (.not.(J.EQ.I)) then                                               
+               call GAMINF(I, J, G)                                                
+               GAM(I, J) = G
+            endif
+         enddo                                                        
+      enddo   
+
    20 continue                                                          
    30 T1 = T                                                              
       NN = NN+1                                                                                                       
-      do 35 I = 1, N                                                       
-   35 Z(I) = Z(I)/ZSUM                                                                                 
+      do I = 1, N                                                       
+         Z(I) = Z(I)/ZSUM  
+      enddo
+
       if (IOUT.NE.6) write(IOUT, 602) NN                                  
       if (IOUT.NE.6) write(IOUT, 605) T, PP, ZSUM, (Z(I), I = 1, N)              
       call unifac(1, Z, AL, DA, PACT)                                       
       SFAS(1) = 1.                                                        
       GNUL = 0.                                                           
-      do 40 I = 1, N                                                       
-        XVL(I, 1) = 1.                                                       
-        Z(I) = Z(I)+1.D-20                                                  
-        DLX(I) = DLOG(Z(I))                                                 
-        A(I) = AL(I)+DLX(I)                                                 
-   40   GNUL = GNUL+Z(I)*AL(I)                                              
-      NF = 1                                                              
+      do I = 1, N                                                       
+         XVL(I, 1) = 1.                                                       
+         Z(I) = Z(I)+1.D-20                                                  
+         DLX(I) = DLOG(Z(I))                                                 
+         A(I) = AL(I)+DLX(I)                                                 
+         GNUL = GNUL+Z(I)*AL(I)
+      enddo                                              
+      NF = 1     
+
    50 call STIG(Y, S)                                                    
-      if (S.GT.-1.D-7) goto 70                                                                                              
-      if (IOUT.NE.6) write(IOUT, 603)                                     
-      do 60 I = 1, N                                                       
-        YVAL(I) = 1.D-5*Y(I)/Z(I)                                           
-   60 continue                                                          
-      goto 100                                                          
-   70 do 75 I = 1, N                                                       
-   75   YVAL(I) = DLOG(Y(I))                                                
-      XLAM = 1.                                                                              
-      if (IOUT.NE.6.AND.NF.EQ.1.AND.IPR.GT.0) write(IOUT, 606)            
-      if (IOUT.NE.6.AND.NF.GT.1.AND.IPR.GT.0) write(IOUT, 609) NF         
-      call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
-      if (FUN.LT.-1.D-7) goto 80                                         
-      write(output, *) 1
-        write(output, 2613) (Z(j), J = 1, N)
-        write(output, 2613) (AL(j), j = 1, N)        
-      write(output, *) "SYSTEM IS STABLE"                                                   
+      !if (S.GT.-1.D-7) goto 70
+      if (.not.(S.GT.-1.D-7)) then
+         if (IOUT.NE.6) write(IOUT, 603)                                     
+         do I = 1, N                                                       
+            YVAL(I) = 1.D-5*Y(I)/Z(I)
+         enddo
+         60 continue                                                          
+         !goto 100
+      else
+         70 continue
+         do I = 1, N                                                       
+            YVAL(I) = DLOG(Y(I))  
+         enddo
 
-	 write(7, 46) T, (xM(l, 1), l = 1, N)   
-	 write(7, 46) T, (xM(l, 2), l = 1, N)
-	 write(7, *)                    
+         XLAM = 1.                                                                              
+         if (IOUT.NE.6.AND.NF.EQ.1.AND.IPR.GT.0) write(IOUT, 606)            
+         if (IOUT.NE.6.AND.NF.GT.1.AND.IPR.GT.0) write(IOUT, 609) NF         
+         call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+  
+         if (.not.(FUN.LT.-1.D-7)) then                                        
+            write(output, *) 1
+            write(output, 2613) (Z(j), J = 1, N)
+            write(output, 2613) (AL(j), j = 1, N)        
+            write(output, *) "SYSTEM IS STABLE"                                                   
+	         write(7, 46) T, (xM(l, 1), l = 1, N)   
+	         write(7, 46) T, (xM(l, 2), l = 1, N)
+	         write(7, *)                    
+            if (IOUT.NE.6) write(IOUT, 604)
+         endif
 
+         80 if (IOUT.NE.6) write(IOUT, 603)                                     
+         do I = 1, N                                                       
+            YVAL(I) = 1.D-5*DEXP(YVAL(I))/Z(I)   
+         enddo
+      endif
+                       
+  100 NF = NF+1
 
-
-      if (IOUT.NE.6) write(IOUT, 604)                                                                                         
-   80 if (IOUT.NE.6) write(IOUT, 603)                                     
-      do 90 I = 1, N                                                       
-   90   YVAL(I) = 1.D-5*DEXP(YVAL(I))/Z(I)                                  
-  100 NF = NF+1                                                           
   104 do 105 I = 1, N                                                      
         if (YVAL(I).GT.1.D0) goto 106                                      
   105 continue                                                          
