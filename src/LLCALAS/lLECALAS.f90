@@ -14,7 +14,7 @@ subroutine llecalas(Tf, Pf, Zf)
 ! *                          VERSION GENERALIZADA                             *        
 ! *                              Junio 2023                                   *
 ! *   Modificada por:                                                         *
-! *                        ALFONSINA  ESTER ANDREATTA                         *   
+! *                        ALFONSINA ESTER ANDREATTA                         *   
 ! *                          JOSE ANTONIO SCILIPOTI                           *  
 ! *                           JUAN PABLO ROVEZZI                              *
 ! *   Revisada en Octubre del 2007 en el chequeo de estabilidad               *
@@ -96,7 +96,8 @@ subroutine llecalas(Tf, Pf, Zf)
       & FORM = 'FORMATTED')
       OPEN (UNIT = 3, FILE = 'output.OUT', FORM = 'FORMATTED')
 	   output = 3                                                  
-      if (IOUT.EQ.0) IOUT = 6                                                                                
+      if (IOUT.EQ.0) IOUT = 6
+
       if (.not.(IOUT.EQ.6)) then 
          write(IOUT, 608)                                                   
          write(IOUT, 610)                                                   
@@ -107,9 +108,10 @@ subroutine llecalas(Tf, Pf, Zf)
          if (MODEL.EQ.0) write(IOUT, 624)                                    
          if (MODEL.EQ.1) write(IOUT, 625)                                    
          write(IOUT, 623) NTEXT  
-      endif                                                                                
-    5 continue                                                          
-    !  call PARIN2     hago que se llame desde el main                                                                                                   
+      endif
+
+      5 continue                                                          
+
       T1 = 0.                                                             
       NN = 0                                                              
       T = Tf
@@ -119,11 +121,13 @@ subroutine llecalas(Tf, Pf, Zf)
          close (unit = 3)
          return
       endif
+
       if (PP/=  0..and.NOVAP/=  0) then
          do I = 1, N
          PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))
          enddo                                                    
-      endif       
+      endif
+
       Z(:) = Zf(:)
       ZSUM = 0.                                                           
       ZMAX = 0.                                                           
@@ -134,114 +138,119 @@ subroutine llecalas(Tf, Pf, Zf)
          MAXZ = I
          continue
       enddo                                                            
-   15 continue                                                          
-      if (T.EQ.T1) goto 30                                               
-      call PARAM2                                                       
-      if (ICALC.NE.1) goto 16                                            
-      if (N.NE.2.AND.N.NE.3) write(6, 616)                                
-      if (IOUT.NE.6.AND.N.NE.2.AND.N.NE.3) write(IOUT, 616)               
-      Y13 = Z(1)                                                          
-      Y21 = Z(2)                                                          
-      !write(6, 633) T                                                    
-      if (IOUT.NE.6) write(IOUT, 633) T                                   
-      if (.not.(N.EQ.3)) then                                                
-         call SOLBIN                                                       
-         if(IOUT.EQ.1) CLOSE (UNIT = 1)
-         close (unit = 3)
-         return
-      endif   
+      15 continue 
 
-   12 STEP = Z(3)/100.D0                                                  
-      if (STEP.EQ.0.) STEP = .02D0                                         
-      call BINOD                                                        
-      if(IOUT.EQ.1) CLOSE (UNIT = 1)
-      close (unit = 3)
-      return
-      
-   16 continue                                                          
-      if (ICALC.NE.2) goto 19                                            
-      if (N.NE.2) write(6, 616)                                           
-      if (IOUT.NE.6.AND.N.NE.2) write(IOUT, 616)                          
-      XC(1) = 0.                                                          
-      XC(2) = .2D0                                                        
-      XC(3) = .5D0                                                        
-      XC(4) = .8D0                                                        
-      XC(5) = 1.D0                                                        
-      do K = 1, 5                                                      
-         Y(1) = XC(K)                                                        
-         Y(2) = 1.D0-XC(K)                                                   
-         call unifac(1, Y, ACT1, DACT1, PACT)                                  
-         GE(K, 1) = ACT1(1)                                                   
-         GE(K, 2) = ACT1(2)
-      enddo                                                   
-      READ(2, *) R(1), Q(1)                                               
-      READ(2, *) R(2), Q(2)                                                                                    
-      write(6, 627)                                                      
-      do I = 1, 2                                                       
-         write(6, 626) I, R(I), Q(I)   
-      enddo
-      if (.not.(IOUT.EQ.6)) then                                             
-         write(IOUT, 627)                                                   
-         do 11 I = 1, 2
-            11   write(IOUT, 626) I, R(I), Q(I)  
-      endif
+      if (.not.(T.EQ.T1)) then !goto 30                                               
+         call PARAM2                                                       
+         if (.not.(ICALC.NE.1)) then                                            
+            if (N.NE.2.AND.N.NE.3) write(6, 616)                                
+            if (IOUT.NE.6.AND.N.NE.2.AND.N.NE.3) write(IOUT, 616)               
+            Y13 = Z(1)                                                          
+            Y21 = Z(2)                                                                                                           
+            if (IOUT.NE.6) write(IOUT, 633) T                                   
+            if (.not.(N.EQ.3)) then                                                
+               call SOLBIN                                                       
+            if(IOUT.EQ.1) CLOSE (UNIT = 1)
+            close (unit = 3)
+            return
+         endif   
 
-   13 continue                                                          
-      X(1) = Z(1)/300.D0                                                  
-      X(2) = Z(2)/300.D0                                                  
-      do I = 1, 2                                                       
-         do J = 1, 2                                                       
-            QT(I, J) = 0.                                                        
-            P(I, J) = 0.                                                         
-        enddo
-      enddo
-      QT(1, 1) = Q(1)                                                      
-      QT(2, 2) = Q(2)                                                      
-      NK = 2                                                              
-      NG = 2                                                              
-      XLAMB = 1.                                                          
-      call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
-      write(6, 633) T                                                    
-      if (IOUT.NE.6) write(IOUT, 633) T                                   
-      write(6, 617) P(1, 2), P(2, 1)       
-      !(///, ' ** UNIQUAC PARAMETERS FROM UNIFAC **',
-      !//, 5X, 'A12/R = ', F12.3, ' K , A21/R = ', F12.3, ' K', ///)                                  
-      if (IPR.EQ.1) write(6, 618)                                         
-      do L = 1, 5                                                       
-         do I = 1, 2                                                       
-            GE(L, I) = DEXP(GE(L, I))                                             
-            GC(L, I) = DEXP(GC(L, I))
-         enddo
-      enddo 
+         12 STEP = Z(3)/100.D0                                                  
+            if (STEP.EQ.0.) STEP = .02D0                                         
+            call BINOD                                                        
+            if(IOUT.EQ.1) CLOSE (UNIT = 1)
+            close (unit = 3)
+            return
+         endif 
 
-      if (IPR.EQ.1) write(6, 619) ((GE(L, I), L = 1, 5), I = 1, 2)                 
-      if (IPR.EQ.1) write(6, 619) ((GC(L, I), L = 1, 5), I = 1, 2)                 
-      
-      if (.not.(IOUT.EQ.6)) then                                             
-         write(IOUT, 617) P(1, 2), P(2, 1)                                     
-         if (IPR.EQ.1) write(IOUT, 618)                                      
-         if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
-         if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)
-      endif              
-   
-      22 continue                                                          
-      if(IOUT.EQ.1) CLOSE (UNIT = 1)
-      close (unit = 3)
-      return
+         !16 continue
 
-   19 continue                                                          
-      do I = 1, N                                                       
-         do J = 1, N                                                       
-            GAM(I, J) = 0.D0                                                     
-            if (.not.(J.EQ.I)) then                                               
-               call GAMINF(I, J, G)                                                
-               GAM(I, J) = G
+         if (.not.(ICALC.NE.2)) then                                           
+            if (N.NE.2) write(6, 616)                                           
+            if (IOUT.NE.6.AND.N.NE.2) write(IOUT, 616)                          
+            XC(1) = 0.                                                          
+            XC(2) = .2D0                                                        
+            XC(3) = .5D0                                                        
+            XC(4) = .8D0                                                        
+            XC(5) = 1.D0                                                        
+            do K = 1, 5                                                      
+               Y(1) = XC(K)                                                        
+               Y(2) = 1.D0-XC(K)                                                   
+               call unifac(1, Y, ACT1, DACT1, PACT)                                  
+               GE(K, 1) = ACT1(1)                                                   
+               GE(K, 2) = ACT1(2)
+            enddo                                                   
+            READ(2, *) R(1), Q(1)                                               
+            READ(2, *) R(2), Q(2)                                                                                    
+            write(6, 627)                                                      
+            do I = 1, 2                                                       
+               write(6, 626) I, R(I), Q(I)   
+            enddo
+            if (.not.(IOUT.EQ.6)) then                                             
+               write(IOUT, 627)                                                   
+               do I = 1, 2
+                  write(IOUT, 626) I, R(I), Q(I)
+               enddo  
             endif
-         enddo                                                        
-      enddo   
 
-   20 continue                                                          
-   30 T1 = T                                                              
+            13 continue                                                          
+            X(1) = Z(1)/300.D0                                                  
+            X(2) = Z(2)/300.D0                                                  
+            do I = 1, 2                                                       
+               do J = 1, 2                                                       
+                  QT(I, J) = 0.                                                        
+                  P(I, J) = 0.                                                         
+               enddo
+            enddo
+            QT(1, 1) = Q(1)                                                      
+            QT(2, 2) = Q(2)                                                      
+            NK = 2                                                              
+            NG = 2                                                              
+            XLAMB = 1.                                                          
+            call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
+            write(6, 633) T                                                    
+            if (IOUT.NE.6) write(IOUT, 633) T                                   
+            write(6, 617) P(1, 2), P(2, 1)       
+            !(///, ' ** UNIQUAC PARAMETERS FROM UNIFAC **',
+            !//, 5X, 'A12/R = ', F12.3, ' K , A21/R = ', F12.3, ' K', ///)                                  
+            if (IPR.EQ.1) write(6, 618)                                         
+            do L = 1, 5                                                       
+               do I = 1, 2                                                       
+                  GE(L, I) = DEXP(GE(L, I))                                             
+                  GC(L, I) = DEXP(GC(L, I))
+               enddo
+            enddo 
+
+            if (IPR.EQ.1) write(6, 619) ((GE(L, I), L = 1, 5), I = 1, 2)                 
+            if (IPR.EQ.1) write(6, 619) ((GC(L, I), L = 1, 5), I = 1, 2)                 
+      
+            if (.not.(IOUT.EQ.6)) then                                             
+               write(IOUT, 617) P(1, 2), P(2, 1)                                     
+               if (IPR.EQ.1) write(IOUT, 618)                                      
+               if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
+               if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)
+            endif              
+   
+            22 continue                                                          
+            if(IOUT.EQ.1) CLOSE (UNIT = 1)
+            close (unit = 3)
+            return
+         endif
+
+         !19 continue                                                          
+         do I = 1, N                                                       
+            do J = 1, N                                                       
+               GAM(I, J) = 0.D0                                                     
+               if (.not.(J.EQ.I)) then                                               
+                  call GAMINF(I, J, G)                                                
+                  GAM(I, J) = G
+               endif
+            enddo                                                        
+         enddo   
+
+         !20 continue                                                          
+      endif
+      30 T1 = T                                                              
       NN = NN+1                                                                                                       
       do I = 1, N                                                       
          Z(I) = Z(I)/ZSUM  
@@ -300,14 +309,26 @@ subroutine llecalas(Tf, Pf, Zf)
                        
   100 NF = NF+1
 
-  104 do 105 I = 1, N                                                      
-        if (YVAL(I).GT.1.D0) goto 106                                      
-  105 continue                                                          
-      goto 109                                                          
-  106 do 107 I = 1, N                                                      
-  107   YVAL(I) = YVAL(I)/10.                                               
-      goto 104                                                          
-  109 continue                                                          
+  !104 do 105 I = 1, N                                                      
+  !      if (YVAL(I).GT.1.D0) goto 106                                      
+  !105 continue                                                          
+  !    goto 109                                                          
+  !106 do 107 I = 1, N                                                      
+  !107   YVAL(I) = YVAL(I)/10.                                               
+  !    goto 104                                                          
+  !109 continue
+  
+  outer:  do while (YVAL(I).GT.1.D0)
+            do I = 1, N
+                if (.not.(YVAL(I).GT.1.D0)) then
+                  exit outer
+               endif
+            enddo
+            do I = 1, N
+               YVAL(I) = YVAL(I)/10.
+            enddo
+         enddo outer
+
       SFAS(NF) = 1.                                                       
       XLAM = .2                                                           
       if (NF.EQ.2) XLAM = .5                                               
@@ -316,11 +337,16 @@ subroutine llecalas(Tf, Pf, Zf)
       call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
       NT = NF*N                                                           
       NB = NT-N                                                           
-      do 110 I = 1, NB                                                     
-  110   YVAL(NT+1-I) = YVAL(NB+1-I)                                                                                     
-      NVAP = 0                                                            
-      do 111 J = 1, NF                                                     
-        if (IDUM(J).EQ.1) NVAP = J                                           
+      do I = 1, NB                                                     
+         YVAL(NT+1-I) = YVAL(NB+1-I)
+      enddo
+                                                                                          
+      NVAP = 0
+
+      do J = 1, NF                                                     
+         if (IDUM(J).EQ.1) NVAP = J
+      enddo
+                                                
   111 continue                                                                                         
       if (IOUT.NE.6.AND.NVAP.EQ.0) write(IOUT, 630)                       
       if (IOUT.NE.6.AND.NVAP.NE.0) write(IOUT, 631) NVAP                                                   
@@ -328,40 +354,48 @@ subroutine llecalas(Tf, Pf, Zf)
       if (IOUT.NE.6) write(IOUT, 611)(J, SFAS(J), J = 1, NF)                   
       if (IOUT.NE.6) write(IOUT, 612) (J, J = 1, NF)                          
       SUM = 0.                                                            
-      do 115 I = 1, N                                                      
-        DLX(I) = XVL(I, NF)*Z(I)/SFAS(NF)                                    
-  115   SUM = SUM+DLX(I)                                                    
+      do I = 1, N                                                      
+         DLX(I) = XVL(I, NF)*Z(I)/SFAS(NF)                                    
+         SUM = SUM+DLX(I)
+      enddo
+
       SUM = DLOG(SUM)                                                     
       call unifac(1, DLX, A, DA, PACT)                                      
-      do 120 I = 1, N                                                      
-        DLX(I) = DLOG(DLX(I))                                               
-  120   A(I) = A(I)+DLX(I)-SUM                                              
+      do I = 1, N                                                      
+         DLX(I) = DLOG(DLX(I))                                               
+         A(I) = A(I)+DLX(I)-SUM
+      enddo
+
 !-------------------------------------------------------------------------------
-      do 1130 j = 1, nf
-        do 1131 i = 1, n
- 1131       xmj(i) = xm(i, j)
-        call unifac(1, xmj, actgam, de, pe)
-        do 1132 i = 1, n
- 1132       agam(i, j) = actgam(i)
- 1130 continue
+      do j = 1, nf
+         do i = 1, n
+            xmj(i) = xm(i, j)
+         enddo
+         call unifac(1, xmj, actgam, de, pe)
+         do i = 1, n
+            agam(i, j) = actgam(i)
+         enddo
+      enddo
+      
       write (output, *) NF
       compfases(:, :) = xm(:, :)
-      do i = 1, NF !escribe resultados para el output que ser� le�do por excel
+      do i = 1, NF !escribe resultados para el output que sera leido por excel
         write(output, 2613) (XM(j, i), J = 1, N)
         write(output, 2613) (agam(j, i), j = 1, N)  
       enddo
     
-      if (IOUT.EQ.6) goto 132                                            
-      do 131 I = 1, N                                                      
-      write(IOUT, 613) I, (XM(I, J), J = 1, NF)    
-  131 write(iout, 1613) i, (agam(i, j), j = 1, nf)
-   46	format (2X, F12.2, 8X, F12.6, 8X, F12.6 , 8X, F12.6, 8X, F12.6, &                                                 
-    8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6)
+      if (.not.(IOUT.EQ.6)) then                                            
+         do I = 1, N                                                      
+            write(IOUT, 613) I, (XM(I, J), J = 1, NF)    
+            write(iout, 1613) i, (agam(i, j), j = 1, nf)
+         enddo
+         46	format (2X, F12.2, 8X, F12.6, 8X, F12.6 , 8X, F12.6, 8X, F12.6, &                                                 
+         8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6, 8X, F12.6, 8X,&
+         F12.6, 8X, F12.6)
 !-------------------------------------------------------------------------------
-  132 continue                                                          
+      endif
+      132 continue                                                          
                                                        
-
-
   501 format(36A2)                                                      
   502 format(8F10.2)                                                    
   503 format(20I3)                                                      
@@ -410,7 +444,9 @@ subroutine llecalas(Tf, Pf, Zf)
       close (unit = 3)
 
                                                                     
-      endsubroutine llecalas   
+      endsubroutine llecalas
+      
+
 !###############################################################################                                                                 
       subroutine unifac(NDIF, X, ACT, DACT, PACT)                           
       IMPLICIT REAL*8(A-H, O-Z)                                          
