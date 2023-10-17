@@ -7,8 +7,8 @@ program main
     
     integer::i
     integer::variables
-    real*8::fmin
-    real*8,allocatable,dimension(:)::x
+    real(kind=8) ::fmin
+    real(kind=8) ,allocatable,dimension(:)::x
     
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
@@ -22,7 +22,6 @@ program main
     
     x(1) = 0.0000001
     
-    !Ve en el caso de la extraccion del agua    
     if (.false.) then
         agextr = .true.
         aglim = 1.D-4
@@ -30,15 +29,8 @@ program main
         agextr = .false.
     endif
     
-    !Optimiza la funcion f_n en el documento Fobj
-    !FMIN = praxis_n ( 3.D-4, 1.D1, variables, 3, x, f_n )
-    
     !Genera una lista de concentraciones segun la funcion genDat que esta en el documento Conversion_f     
-    !call genDat(x,variables)
     call genDatExtr(x,variables,2,10,.false.)
-    
-    !Genera una espacion de datos de la funcion objetivo en todos los valores posibles de X
-    !call genDatosGraf(40)
     
     
     pause
@@ -49,33 +41,32 @@ endprogram main
 subroutine leer_input_flash()
     use InputData
     use flash 
-    implicit none    
-    integer::N,i,j,k,ng
-    real*8::Tx,px
+    implicit none   
+   
+    integer :: N, i, j, k, ng
+    real(kind=8) :: Tx, px
     COMMON/CUFAC/N,NG,Px(10,10),Tx
 
-    
-    
     call open_file_name()
-    OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
-    READ(2,501) NTEXT   
-    501 FORMAT(36A2)  
-    READ(2,*) ICALC,modelo,IPRm,IOUTm,NOVAPm,igm, ipareq     
+    open(UNIT=2, file=name, status='OLD', form='FORMATTED')
+    read(2, '(36A2)') NTEXT
+    read(2, *) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq
     call ab_ban1(modelo)
     CALL PARIN2
-    IF(NOVAPm/=0) then                                             
-        DO 6 J=1,N                                                        
-!C   6 READ(2,502) (ANT(K,J),K=1,3)                                      
-    6       READ(2,*) (ANT(K,J),K=1,3)                                        
-        DO 7 J=1,N                                                        
-            ANT(1,J)=2.302585*(ANT(1,J)-2.880814)                             
-    7       ANT(2,J)=2.302585*ANT(2,J)                                        
-    endif   
+    IF(NOVAPm/=0) then                                            
+        DO J=1,N                                                                                          
+            READ(2,*) (ANT(K,J),K=1,3)                                       
+        ENDDO 
+        DO J=1,N                                                       
+            ANT(1,J)=2.302585*(ANT(1,J)-2.880814)                            
+            ANT(2,J)=2.302585*ANT(2,J)                                       
+        ENDDO 
+    endif  
     READ(2,502) T,P
-    502 FORMAT(2F10.2)  
-    READ(2,*) (Z(I),I=1,N)  
-    close(unit=2)
-endsubroutine leer_input_flash
+    502 FORMAT(2F10.2) 
+    READ(2,*) (Z(I),I=1,N)
+
+end subroutine leer_input_flash
     
     
 subroutine open_file_name()
@@ -84,15 +75,25 @@ subroutine open_file_name()
     
     integer::parameters
     
-    !apertura de bases de datos generadas desde excel
+    ! Open file 'name.dat'
     OPEN (UNIT=1,FILE='name.dat',status='OLD',FORM='FORMATTED')
+    
+    ! Read parameters from file
     read(1,*)parameters 
+    
+    ! Read name from file
     read(1,"(A36)") name
+    
+    ! Remove extra characters from name
     name = name(2:len_trim(name)-1)
+    
+    ! Check if parameters is 1
     if (parameters==1)then
         call LeerBases()
         stop
-    endif    
-    CLOSE (UNIT=1)  
+    endif   
+    
+    ! Close file
+    CLOSE (UNIT=1) 
 
-endsubroutine open_file_name
+end subroutine open_file_name

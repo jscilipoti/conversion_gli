@@ -1,0 +1,280 @@
+     subroutine MARQ(FUNC, N, M, X, XLAMB, FAC, EPSG, MAXF)   
+      IMPLICIT REAL*8(A-H, O-Z)      
+      common/COUT/IOUT      
+      common/CMARQ/GRAD(2), XJTJ(2, 2)
+      common/CIPR/IPR
+      dimension X(2), Y(2), XNY(2), A(2, 2), DX(2)   
+      IEVAL = 0   
+      ISTOP = 0   
+      IER = 0     
+      XMAXL = XLAMB*1.D+4     
+      ITER = 0    
+      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 603)
+      if (IPR.EQ.1) write(6, 603)     
+      call FUNC(N, M, 1, X, SRES)
+      IEVAL = IEVAL+1 
+      SSQ = SRES  
+      if (IPR.EQ.1.AND.IOUT.NE.6) write(IOUT, 601) ITER, SSQ
+      if (IPR.EQ.1) write(6, 601) ITER, SSQ    
+   10 continue  
+      if (IEVAL.NE.1) call FUNC(N, M, 1, X, SRES)
+      GNORM = 0.D0
+      do 140 I = 1, N  
+  140 GNORM = GNORM+GRAD(I)**2
+      GNORM = DSQRT(GNORM)    
+      if (GNORM.LT.EPSG) ISTOP = ISTOP+1
+      if (ISTOP.GT.0) goto 1000      
+      ITER = ITER+1   
+   49 continue  
+      if (IEVAL.GT.MAXF) goto 998    
+      do 41 I = 1, N   
+      do 40 J = 1, N   
+   40 A(I, J) = XJTJ(I, J)      
+   41 A(I, I) = A(I, I)+XLAMB   
+      call CHOL(N, A)
+      Y(1) = -GRAD(1)/A(1, 1)  
+      do 81 I = 2, N   
+      SUM = 0.D0  
+      II = I-1    
+      do 80 J = 1, II  
+   80 SUM = SUM+A(I, J)*Y(J)   
+   81 Y(I) = (-GRAD(I)-SUM)/A(I, I)    
+      DX(N) = Y(N)/A(N, N)     
+      do 85 I = 2, N   
+      II = N-I+1  
+      SUM = 0.D0  
+      III = II+1  
+      do 84 J = III, N 
+   84 SUM = SUM+A(J, II)*DX(J) 
+   85 DX(II) = (Y(II)-SUM)/A(II, II)   
+      do 90 I = 1, N   
+   90 XNY(I) = X(I)+DX(I)     
+      call FUNC(N, M, 0, XNY, SRES)     
+      IEVAL = IEVAL+1 
+      SSQNY = SRES
+      SQ1 = 0.D0  
+      SQ2 = 0.D0  
+      do 110 I = 1, N  
+      Y(I) = XNY(I)*300.D0    
+      SQ1 = SQ1+DX(I)**2      
+      SQ2 = SQ2-DX(I)*GRAD(I) 
+  110 continue  
+      CCAL = SSQ-SSQNY
+      CPRE = SQ2+XLAMB*SQ1    
+      CALPRE = CCAL/(CPRE+1.D-14)     
+      if (IPR.EQ.1) write(6, 601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE 
+      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE    
+      if (SSQ-SSQNY.GT..75*CPRE) XLAMB = XLAMB/FAC 
+      if (SSQ-SSQNY.LT..25*CPRE) XLAMB = XLAMB*FAC 
+      if (XLAMB.GT.XMAXL) goto 999   
+      if (SSQNY-SSQ) 120, 120, 119     
+  119 continue  
+      if (SSQNY-SSQ.GT.DABS(SSQ)*.5D0) XLAMB = XLAMB*FAC   
+      goto 49   
+  120 continue  
+      if (SSQ-SSQNY.GT.DABS(SSQ)*.8D0) XLAMB = XLAMB/FAC   
+      do 130 I = 1, N  
+  130 X(I) = XNY(I)   
+      SSQ = SSQNY 
+      goto 10   
+  998 IER = 1     
+      goto 1000 
+  999 IER = 2     
+      goto 1000 
+  601 format(1X, I3, 2X, D12.4, 2F10.3, 5X, 2D12.4, 3X, F10.2)  
+  602 format(//, ' ISTOP = ', I2, 5X, 'IER = ', I2, 5X, 'IEVAL = ', I5, //)
+  603 format(///, '  ** ITERATIONCOURSE, UNIQUAC-PARAMETERS FROM UNIFAC **'/)      
+ 1000 continue  
+      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 602) ISTOP, IER, IEVAL
+      if (IPR.EQ.1) write(6, 602)ISTOP, IER, IEVAL
+      return    
+      end 
+	  
+Sure, I can try to rewrite your code without using gotos and comments. Here is my attempt:
+
+```fortran
+! A subroutine to perform Marquardt's algorithm for nonlinear least squares
+! FUNC is the name of a function that computes the residuals and the gradient
+! N is the number of parameters
+! M is the number of data points
+! X is the array of parameters
+! XLAMB is the damping factor
+! FAC is the factor to adjust XLAMB
+! EPSG is the tolerance for the gradient norm
+! MAXF is the maximum number of function evaluations
+subroutine MARQ(FUNC, N, M, X, XLAMB, FAC, EPSG, MAXF)
+  implicit none ! Declare all variables explicitly
+  integer :: N, M, MAXF ! Declare integer variables
+  real(8) :: X(N), XLAMB, FAC, EPSG ! Declare real variables with 8 bytes of precision
+  integer :: IOUT, IPR ! Declare output and print control variables
+  real(8) :: GRAD(N), XJTJ(N, N) ! Declare common variables for gradient and matrix product
+  integer :: IEVAL, ISTOP, IER, ITER ! Declare counters and error flags
+  real(8) :: XMAXL, SRES, SSQ, GNORM ! Declare limits and norms
+  real(8) :: Y(N), XNY(N), A(N, N), DX(N) ! Declare auxiliary arrays
+  real(8) :: SSQNY, SQ1, SQ2, CCAL, CPRE, CALPRE ! Declare quantities for convergence test
+  external :: FUNC ! Declare external function
+  
+  common/COUT/IOUT ! Define common block for output control
+  common/CMARQ/GRAD, XJTJ ! Define common block for gradient and matrix product
+  common/CIPR/IPR ! Define common block for print control
+  
+  IEVAL = 0 ! Initialize function evaluation counter
+  ISTOP = 0 ! Initialize stop flag
+  IER = 0 ! Initialize error flag
+  XMAXL = XLAMB * 1.D+4 ! Set maximum value for damping factor
+  ITER = 0 ! Initialize iteration counter
+  
+  if (IOUT /= 6 .AND. IPR == 1) write(IOUT, *) ' ** ITERATION COURSE, UNIQUAC-PARAMETERS FROM UNIFAC **' ! Write header to output file if needed
+  if (IPR == 1) write(6, *) ' ** ITERATION COURSE, UNIQUAC-PARAMETERS FROM UNIFAC **' ! Write header to standard output if needed
+  
+  call FUNC(N, M, 1, X, SRES) ! Call external function to compute residuals and gradient
+  IEVAL = IEVAL + 1 ! Increment function evaluation counter
+  SSQ = SRES ! Store sum of squared residuals
+  
+  if (IPR == 1 .AND. IOUT /=6) write(IOUT,'(1X,I3,F10.3)') ITER, SSQ ! Write initial values to output file if needed
+  if (IPR == 1) write(6,'(1X,I3,F10.3)') ITER, SSQ ! Write initial values to standard output if needed
+  
+  
+! Start main loop
+  
+  
+! Check gradient norm
+  
+  
+! Check stop condition
+  
+  
+! Increment iteration counter
+  
+  
+! Check function evaluation limit
+  
+  
+! Add damping factor to diagonal elements of matrix product
+  
+  
+! Perform Cholesky decomposition on modified matrix product
+  
+  
+! Solve linear system for search direction
+  
+  
+! Update parameters with search direction
+  
+  
+! Call external function to compute residuals and gradient at new parameters
+  
+  
+! Increment function evaluation counter
+  
+  
+! Compute actual and predicted reduction in sum of squared residuals
+  
+  
+! Compute ratio of actual to predicted reduction
+  
+  
+! Write current values to output file if needed
+  
+  
+! Write current values to standard output if needed
+  
+  
+! Adjust damping factor according to reduction ratio
+  
+  
+! Check damping factor limit
+  
+  
+! Check improvement in sum of squared residuals
+
+    do while (.true.) ! Main loop
+    
+      GNORM = sum(GRAD**2)**0.5 ! Compute gradient norm
+      
+      if (GNORM < EPSG .OR. ISTOP > 0) exit ! Check stop condition
+      
+      ITER = ITER + 1 ! Increment iteration counter
+      
+      if (IEVAL > MAXF) then ! Check function evaluation limit
+      
+        IER = 1
+        
+        exit
+        
+      end if
+      
+      A = XJTJ + XLAMB * diag(XJTJ) ! Add damping factor to diagonal elements of matrix product
+      
+      call CHOL(N,A) ! Perform Cholesky decomposition on modified matrix product
+      
+      Y = -matmul(inv(A),GRAD) ! Solve linear system for search direction
+      
+      XNY = X + Y ! Update parameters with search direction
+      
+      call FUNC(N,M,0,XNY,SRES) ! Call external function to compute residuals and gradient at new parameters
+      
+      IEVAL = IEVAL + 1 ! Increment function evaluation counter
+      
+      SSQNY = SRES ! Store sum of squared residuals at new parameters
+      
+      SQ1 = sum(Y**2) ! Compute predicted reduction denominator
+      
+      SQ2 = -dot_product(Y,GRAD) ! Compute predicted reduction numerator
+      
+      CCAL = SSQ - SSQNY ! Compute actual reduction
+      
+      CPRE = SQ2 + XLAMB * SQ1 ! Compute predicted reduction
+      
+      CALPRE = CCAL / (CPRE + 1.D-14) ! Compute ratio of actual to predicted reduction
+      
+      if (IPR == 1) then ! Write current values to output file and standard output if needed
+      
+        if (IOUT /= 6) write(IOUT,'(1X,I3,F10.3,2F10.3,F10.3,F10.2)') ITER, SSQNY, XNY*300.D0, GNORM, XLAMB, CALPRE
+        
+        write(6,'(1X,I3,F10.3,2F10.3,F10.3,F10.2)') ITER, SSQNY, XNY*300.D0, GNORM, XLAMB, CALPRE
+        
+      end if
+      
+      if (CCAL > 0.75 * CPRE) XLAMB = XLAMB / FAC ! Adjust damping factor according to reduction ratio
+      
+      if (CCAL < 0.25 * CPRE) XLAMB = XLAMB * FAC
+      
+      if (XLAMB > XMAXL) then ! Check damping factor limit
+      
+        IER = 2
+        
+        exit
+        
+      end if
+      
+      if (SSQNY < SSQ) then ! Check improvement in sum of squared residuals
+      
+        X = XNY
+        
+        SSQ = SSQNY
+        
+      end if
+    
+    end do
+  
+! End main loop
+  
+! Write stop flag, error flag and function evaluation counter to output file and standard output if needed
+
+    if (IOUT /= 6 .AND. IPR == 1) write(IOUT,'(//," ISTOP = ",I2," IER = ",I2," IEVAL = ",I5,//)') ISTOP, IER, IEVAL
+    
+    if (IPR == 1) write(6,'(//," ISTOP = ",I2," IER = ",I2," IEVAL = ",I5,//)') ISTOP, IER, IEVAL
+    
+    return
+    
+end subroutine MARQ
+```
+
+I hope this helps. 😊.
+
+Origen: Conversación con Bing, 17/10/2023
+(1) How can I rewrite this (cleanly) without gotos? - Stack Overflow. https://stackoverflow.com/questions/2569303/how-can-i-rewrite-this-cleanly-without-gotos.
+(2) Rewriting a program without using goto statements. https://stackoverflow.com/questions/3877745/rewriting-a-program-without-using-goto-statements.
+(3) Error return, gotos and code duplication in modern Fortran. https://stackoverflow.com/questions/70472410/error-return-gotos-and-code-duplication-in-modern-fortran.
+(4) Automated GOTO removal algorithm - Stack Overflow. https://stackoverflow.com/questions/14061856/automated-goto-removal-algorithm.
