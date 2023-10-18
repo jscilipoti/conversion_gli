@@ -53,7 +53,7 @@
 
       !END DO
 !C
-!C-----Método de la secante
+!C-----Mï¿½todo de la secante
 !C
       DO
         IF ((ABS(X(1)-XOLD(1)) < Epsilon) .OR. (N > NumIterations)) EXIT
@@ -77,19 +77,3 @@
       NEWTON = F_Value
 
 END FUNCTION NEWTON
-    
-    
-    
-double precision FUNCTION FD (X,P)
-!*****************************************************
-!     Derivada de la Función Objetivo
-!*****************************************************      
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-   !   REAL :: FD
-      DIMENSION X(1),XP(1)
-      
-      XP(1)=X(1)+P
-             
-      FD=(f_main(XP,1)-f_main(X,1))/P
-      
-      END FUNCTION FD
