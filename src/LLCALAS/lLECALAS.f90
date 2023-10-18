@@ -65,7 +65,7 @@ subroutine llecalas(Tf, Pf, Zf)
       integer::MODEL, IPR, IOUT, NOVAP, ig            
       character(len = 36):: name1 
       integer:: parameters 
-      real*8::Zf(10)
+      real(8)::Zf(10)
       dimension xmj(10), actgam(10), de(10, 10), pe(2, 2)
    
       ! Variables leidas desde main se pasan a los commons de llecalas
@@ -353,17 +353,17 @@ subroutine llecalas(Tf, Pf, Zf)
       if (IOUT.NE.6) write(IOUT, 614) NF                                  
       if (IOUT.NE.6) write(IOUT, 611)(J, SFAS(J), J = 1, NF)                   
       if (IOUT.NE.6) write(IOUT, 612) (J, J = 1, NF)                          
-      SUM = 0.                                                            
+      SUMM = 0.                                                            
       do I = 1, N                                                      
          DLX(I) = XVL(I, NF)*Z(I)/SFAS(NF)                                    
-         SUM = SUM+DLX(I)
+         SUMM = SUMM+DLX(I)
       enddo
 
-      SUM = DLOG(SUM)                                                     
+      SUMM = DLOG(SUMM)                                                     
       call unifac(1, DLX, A, DA, PACT)                                      
       do I = 1, N                                                      
          DLX(I) = DLOG(DLX(I))                                               
-         A(I) = A(I)+DLX(I)-SUM
+         A(I) = A(I)+DLX(I)-SUMM
       enddo
 
 !-------------------------------------------------------------------------------
@@ -846,7 +846,7 @@ subroutine llecalas(Tf, Pf, Zf)
  
     INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), J, K, CANIL(10) !, A, B, rngoh(NC, NSCM), GA, &
              !
-        real*8::par             
+        real(8)::par             
       logical VL
       external mainsgfunc
                          
@@ -1394,23 +1394,23 @@ subroutine llecalas(Tf, Pf, Zf)
       do 20 I = 1, N                                                       
    20 Y(I) = Z(I)*(2+XVL(I, JM-N)/SFAS(JM-N))/3                            
       goto 40                                                           
-   30 SUM = 0.                                                            
+   30 SUMM = 0.                                                            
       do 35 I = 1, N                                                       
          GG = A(I)-GAM(JM, I)                                                 
          if (GG.LT.-50.D0) GG = -50.D0                                        
          Y(I) = DEXP(GG)                                                     
-   35    SUM = SUM+Y(I)                                                      
+   35    SUMM = SUMM+Y(I)                                                      
    40 NA = 3                                                              
       do 43 K = 1, NA                                                      
       do 36 I = 1, N                                                       
-   36 Y(I) = Y(I)/SUM                                                     
+   36 Y(I) = Y(I)/SUMM                                                     
       call unifac(1, Y, AA, DA, PACT)                                       
       if (K.EQ.NA) goto 44                                               
       do 41 I = 1, N                                                       
    41 Y(I) = DEXP(A(I)-AA(I))                                             
-   42 SUM = 0.                                                            
+   42 SUMM = 0.                                                            
       do 43 I = 1, N                                                       
-   43 SUM = SUM+Y(I)                                                      
+   43 SUMM = SUMM+Y(I)                                                      
    44 continue                                                          
       YV1 = 0.                                                            
       do 50 J = 1, NF                                                      
@@ -1525,13 +1525,13 @@ subroutine llecalas(Tf, Pf, Zf)
       dimension GRAD(30), XMAT(30, 30), Y(30), YEX(10), XEX(10)              
       common/nga/nga, mass(12)
 
-      SUM = 0.                                                            
+      SUMM = 0.                                                            
       do 10 I = 1, N                                                       
       YEX(I) = 0.                                                         
       if (Y(I).GT.-40.) YEX(I) = DEXP(Y(I))                                
-   10 SUM = SUM+YEX(I)                                                    
+   10 SUMM = SUMM+YEX(I)                                                    
       do 15 I = 1, N                                                       
-   15 XEX(I) = YEX(I)/SUM                                                 
+   15 XEX(I) = YEX(I)/SUMM                                                 
       JD = 1                                                              
       if (NDIF.EQ.2) JD = 2                                                
       call unifac(JD, XEX, AL, DA, PACT)                                    
@@ -2131,7 +2131,7 @@ subroutine llecalas(Tf, Pf, Zf)
   602 format(' FALSE SOLUTION IN PHASE 2')                              
       return                                                            
       end                                                              
-      subroutine FUNC(N, M, NDIF, X, SSQ)                                   
+subroutine FUNC(N, M, NDIF, X, SSQ)                                   
       IMPLICIT REAL*8(A-H, O-Z)                                          
       common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
       common/CMARQ/GRAD(2), XJTJ(2, 2)                                    
@@ -2169,375 +2169,422 @@ subroutine llecalas(Tf, Pf, Zf)
       return                                                            
       end                                                              
 
+subroutine MARQ(FUNC, N, M, X, XLAMB, FAC, EPSG, MAXF)
+   ! This subroutine implements the Levenberg-Marquardt algorithm for nonlinear least squares curve fitting
+   ! It uses a common block to store some global variables
+   ! It uses a user-defined function FUNC to evaluate the residuals and the Jacobian matrix
+   ! It uses a subroutine CHOL to perform Cholesky decomposition of a symmetric positive definite matrix
+   ! It uses some format statements to print the output
+   ! It uses some labels and goto statements for control flow
+   ! Declare the implicit type of variables based on the first letter
+   
+   implicit none 
+   !implicit real(8)(A-H, O-Z). This is commented in order to remove it
+   ! Declare the common block COUT to store the output unit number
+   !common/COUT/IOUT
+   ! Declare the common block CMARQ to store the gradient vector and the product of Jacobian transpose and Jacobian matrix
+   !common/CMARQ/GRAD(2), XJTJ(2, 2)
+   ! Declare the common block CIPR to store the print flag
+   !common/CIPR/IPR
 
-   subroutine MARQ(FUNC, N, M, X, XLAMB, FAC, EPSG, MAXF)                  
-      IMPLICIT REAL*8(A-H, O-Z)                                          
-      common/COUT/IOUT                                                  
-      common/CMARQ/GRAD(2), XJTJ(2, 2)                                    
-      common/CIPR/IPR                                                   
-      dimension X(2), Y(2), XNY(2), A(2, 2), DX(2)                           
-      IEVAL = 0                                                           
-      ISTOP = 0                                                           
-      IER = 0                                                             
-      XMAXL = XLAMB*1.D+4                                                 
-      ITER = 0                                                            
-      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 603)                        
-      if (IPR.EQ.1) write(6, 603)                                         
-      call FUNC(N, M, 1, X, SRES)                                           
-      IEVAL = IEVAL+1                                                     
-      SSQ = SRES                                                          
-      if (IPR.EQ.1.AND.IOUT.NE.6) write(IOUT, 601) ITER, SSQ               
-      if (IPR.EQ.1) write(6, 601) ITER, SSQ                                
-   10 continue                                                          
-      if (IEVAL.NE.1) call FUNC(N, M, 1, X, SRES)                            
-      GNORM = 0.D0                                                        
-      do 140 I = 1, N                                                      
-  140 GNORM = GNORM+GRAD(I)**2                                            
-      GNORM = DSQRT(GNORM)                                                
-      if (GNORM.LT.EPSG) ISTOP = ISTOP+1                                   
-      if (ISTOP.GT.0) goto 1000                                          
-      ITER = ITER+1                                                       
-   49 continue                                                          
-      if (IEVAL.GT.MAXF) goto 998                                        
-      do 41 I = 1, N                                                       
-      do 40 J = 1, N                                                       
-   40 A(I, J) = XJTJ(I, J)                                                  
-   41 A(I, I) = A(I, I)+XLAMB                                               
-      call CHOL(N, A)                                                    
-      Y(1) = -GRAD(1)/A(1, 1)                                              
-      do 81 I = 2, N                                                       
-      SUM = 0.D0                                                          
-      II = I-1                                                            
-      do 80 J = 1, II                                                      
-   80 SUM = SUM+A(I, J)*Y(J)                                               
-   81 Y(I) = (-GRAD(I)-SUM)/A(I, I)                                        
-      DX(N) = Y(N)/A(N, N)                                                 
-      do 85 I = 2, N                                                       
-      II = N-I+1                                                          
-      SUM = 0.D0                                                          
-      III = II+1                                                          
-      do 84 J = III, N                                                     
-   84 SUM = SUM+A(J, II)*DX(J)                                             
-   85 DX(II) = (Y(II)-SUM)/A(II, II)                                       
-      do 90 I = 1, N                                                       
-   90 XNY(I) = X(I)+DX(I)                                                 
-      call FUNC(N, M, 0, XNY, SRES)                                         
-      IEVAL = IEVAL+1                                                     
-      SSQNY = SRES                                                        
-      SQ1 = 0.D0                                                          
-      SQ2 = 0.D0                                                          
-      do 110 I = 1, N                                                      
-      Y(I) = XNY(I)*300.D0                                                
-      SQ1 = SQ1+DX(I)**2                                                  
-      SQ2 = SQ2-DX(I)*GRAD(I)                                             
-  110 continue                                                          
-      CCAL = SSQ-SSQNY                                                    
-      CPRE = SQ2+XLAMB*SQ1                                                
-      CALPRE = CCAL/(CPRE+1.D-14)                                         
-      if (IPR.EQ.1) write(6, 601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE 
-      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE                                                
-      if (SSQ-SSQNY.GT..75*CPRE) XLAMB = XLAMB/FAC                         
-      if (SSQ-SSQNY.LT..25*CPRE) XLAMB = XLAMB*FAC                         
-      if (XLAMB.GT.XMAXL) goto 999                                       
-      if (SSQNY-SSQ) 120, 120, 119                                         
-  119 continue                                                          
-      if (SSQNY-SSQ.GT.DABS(SSQ)*.5D0) XLAMB = XLAMB*FAC                   
-      goto 49                                                           
-  120 continue                                                          
-      if (SSQ-SSQNY.GT.DABS(SSQ)*.8D0) XLAMB = XLAMB/FAC                   
-      do 130 I = 1, N                                                      
-  130 X(I) = XNY(I)                                                       
-      SSQ = SSQNY                                                         
-      goto 10                                                           
-  998 IER = 1                                                             
-      goto 1000                                                         
-  999 IER = 2                                                             
-      goto 1000                                                         
-  601 format(1X, I3, 2X, D12.4, 2F10.3, 5X, 2D12.4, 3X, F10.2)                  
-  602 format(//, ' ISTOP = ', I2, 5X, 'IER = ', I2, 5X, 'IEVAL = ', I5, //)       
-  603 format(///, '  ** ITERATIONCOURSE, UNIQUAC-PARAMETERS FROM UNIFAC **'/)                                                              
- 1000 continue                                                          
-      if (IOUT.NE.6.AND.IPR.EQ.1) write(IOUT, 602) ISTOP, IER, IEVAL        
-      if (IPR.EQ.1) write(6, 602)ISTOP, IER, IEVAL                        
-      return                                                            
-      end                                                              
+   ! Declare the subroutine parameters
+   external FUNC ! The user-defined function to evaluate the residuals and the Jacobian matrix
+   
+   ! Declare the subroutine parameters
 
-      subroutine CHOL(N, A)
-         ! A subroutine to perform Cholesky decomposition on a matrix A
-         ! N is the size of the matrix
-         ! A is the matrix to be decomposed, which must be symmetric and positive definite
-         implicit none ! Declare all variables explicitly
-         integer :: N ! Declare integer variable
-         real(8) :: A(2, 2) ! Declare real variable with 8 bytes of precision
-         integer :: I, J, K, I1, J1 ! Declare loop indices and auxiliary variables
-         
-         do I = 1, N ! Loop over the rows of the matrix
-           
-           I1 = I - 1 ! The index of the previous row
-           
-           if (I1 /= 0) then ! If this is not the first row
-             
-             do J = I, N ! Loop over the columns from the diagonal to the right
-               
-               do K = 1, I1 ! Loop over the previous rows
-                 
-                 A(I, J) = A(I, J) - A(I, K) * A(J, K) ! Subtract the product of the lower triangular elements from the current element
-                 
-               end do
-               
-             end do
-             
-           end if
-           
-           if (A(I, I) < 1.D-14) then ! If the diagonal element is too small, set it to a small positive value
-             
-             A(I, I) = 1.D-14
-             
-           end if
-           
-           A(I, I) = DSQRT(A(I, I)) ! Take the square root of the diagonal element
-           
-           if (I /= N) then ! If this is not the last row
-             
-             J1 = I + 1 ! The index of the next row
-             
-             do J = J1, N ! Loop over the rows below
-               
-               A(J, I) = A(I, J) / A(I, I) ! Divide the symmetric element by the diagonal element
-               
-             end do
-             
-           end if
-           
-         end do
-         
-         return
-         
-       end subroutine CHOL                                                                      
+   integer, intent(in) :: N ! The number of parameters
+   integer, intent(in) :: M ! The number of data points
+   real(8), dimension(N), intent(inout) :: X ! The initial and final parameter values
+   !real(8), intent(in) :: XLAMB ! The initial damping factor. This is commented because of an error
+   real(8) :: XLAMB ! The initial damping factor
+   real(8)  :: FAC ! The factor to increase or decrease the damping factor
+   !real(8), intent(in) :: FAC ! The factor to increase or decrease the damping factor. This is commented because of an error
+   real(8), intent(in) :: EPSG ! The convergence criterion for the gradient norm
+   integer, intent(in) :: MAXF ! The maximum number of function evaluations allowed
+   ! Declare the local variables
+   integer :: IEVAL ! The number of function evaluations
+   integer :: ISTOP ! The stop flag
+   integer :: IER ! The error flag
+   real(8) :: XMAXL ! The maximum damping factor allowed
+   integer :: ITER ! The iteration counter
+   real(8) :: SRES ! The sum of squared residuals
+   real(8) :: GNORM ! The norm of the gradient vector
+   integer :: I, J, II, III ! Loop indices
+   real(8), dimension(N) :: Y ! A temporary vector for solving linear equations
+   real(8), dimension(N) :: XNY ! The new parameter values after a trial step
+   real(8), dimension(N,N) :: A ! A temporary matrix for storing the modified Jacobian transpose times Jacobian matrix
+   real(8), dimension(N) :: DX ! The trial step vector
+   real(8) :: SSQNY ! The sum of squared residuals for the new parameter values
+   real(8) :: SQ1, SQ2 ! Some auxiliary variables for computing the actual and predicted reduction ratios
+   real(8) :: CCAL, CPRE, CALPRE ! The actual and predicted reduction ratios and their quotient
 
-      subroutine GAUSL(ND, NCOL, N, NS, A)
-         ! A subroutine to perform Gaussian elimination on a matrix A
-         ! ND is the number of rows of A
-         ! NCOL is the number of columns of A
-         ! N is the number of equations
-         ! NS is the number of right-hand sides
-         ! A is the matrix to be solved, containing both the coefficients and the constants
-         ! Subroutine gausl solves n linear algebraic equations by gauss        
-         ! Elimination with row pivoting                                        
-         ! To solve the problem qx = u, where q is a nxn matrix and u is nxns, 
-         ! One places q in the first n columns of a and u is placed in the      
-         ! Following ns columns.                                                
-         ! The program returns x = q**(-1)*u at the previous position of u.                                                                      
-         ! Nd is the row dimension and ncol is the column dimension of a.       
-         ! Both must be transferred to the subroutine.       
-         implicit none ! Declare all variables explicitly
-         integer :: ND, NCOL, N, NS ! Declare integer variables
-         real(8) :: A(ND, NCOL) ! Declare real variable with 8 bytes of precision
-         integer :: I, J, K, IP, I1 ! Declare loop indices and auxiliary variables
-         real(8) :: X ! Declare a temporary variable for swapping rows
-         integer :: N1, NT ! Declare variables for convenience
-         
-         N1 = N + 1 ! The index of the first column of constants
-         NT = N + NS ! The index of the last column of constants
-         
-         if (N /= 1) then ! If there is more than one equation, do elimination
-           
-           do I = 2, N ! Loop over the rows below the first one
-             IP = I - 1 ! The index of the pivot row
-             I1 = IP ! An alias for IP
-             X = abs(A(I1, I1)) ! The absolute value of the pivot element
-             
-             do J = I, N ! Loop over the rows below the pivot row
-               if (abs(A(J, I1)) >= X) then ! If the element is larger or equal to the pivot element, update it
-                 
-                 X = abs(A(J, I1)) ! Update the pivot element value
-                 IP = J ! Update the pivot row index
-                 
-               end if
-               
-             end do
-             
-             if (IP /= I1) then ! If the pivot row is not the original one, swap them
-               
-               do J = I1, NT ! Loop over the columns from the pivot column to the last one
-                 X = A(I1, J) ! Store the element from the original row
-                 A(I1, J) = A(IP, J) ! Copy the element from the pivot row to the original row
-                 A(IP, J) = X ! Copy the stored element to the pivot row
-               end do
-               
-             end if
-             
-             do J = I, N ! Loop over the rows below the pivot row
-               
-               X = A(J, I1) / A(I1, I1) ! Compute the factor to eliminate the element
-               
-               do K = I, NT ! Loop over the columns from the pivot column to the last one
-                 
-                 A(J, K) = A(J, K) - X * A(I1, K) ! Subtract the factor times the pivot row from the current row
-                 
-               end do
-               
-             end do
-             
-           end do
-           
+   real(8), dimension(N) :: GRAD ! This declares GRAD as a double precision real array of size 2
+   real(8), dimension(N,N) :: XJTJ ! This declares GRAD as a double precision real array of size 2
+   real(8) :: SSQ, SUMM !This declares SUMM number which adds the elements of an array along a specified dimension or across all dimensions and the sum of Squared residuals.
+   integer :: IOUT ! This declares the output unit number
+   integer :: IPR ! This declares the print flag
+
+
+   ! Initialize some variables
+   IEVAL = 0 ! Set the number of function evaluations to zero
+   ISTOP = 0 ! Set the stop flag to zero
+   IER = 0   ! Set the error flag to zero 
+   XMAXL = XLAMB * (10.0d0 **4) ! Set the maximum damping factor allowed to a large value 
+   ITER = 0   ! Set the iteration counter to zero
+   
+   ! Print a header if required 
+   if (IOUT /=6 .and. IPR ==1) write(IOUT,603)
+   if (IPR ==1) write(6,603)
+   
+   ! Evaluate the function at the initial parameter values and get the sum of squared residuals 
+   call FUNC(N,M,1,X,SRES)
+   IEVAL = IEVAL +1   ! Increment the number of function evaluations 
+   SSQ = SRES          ! Store the sum of squared residuals 
+   
+   ! Print the initial values if required 
+   if (IPR ==1 .and. IOUT /=6) write(IOUT,601) ITER, SSQ 
+   if (IPR ==1) write(6,601) ITER, SSQ 
+   
+   ! Start the main loop 
+   do
+      ! Evaluate the function at the current parameter values and get the sum of squared residuals and the gradient vector 
+      if (IEVAL /=1) call FUNC(N,M,1,X,SRES)
+      SSQ = SRES          ! Store the sum of squared residuals 
+      ! Compute the norm of the gradient vector 
+      GNORM = 0.0d0
+      do I = 1, N
+         GNORM = GNORM + GRAD(I) **2
+      end do
+      GNORM = sqrt(GNORM)
+      ! Check the convergence criterion for the gradient norm 
+      if (GNORM < EPSG) ISTOP = ISTOP +1
+      ! If the gradient norm is smaller than the tolerance, set the stop flag to one 
+      ! Check the stop flag 
+      if (ISTOP >0) exit ! If the stop flag is positive, exit the main loop
+      ITER = ITER +1 !Increment the iteration counter 
+      ! Start the inner loop 
+      do 
+         ! Check the maximum number of function evaluations 
+         if (IEVAL > MAXF) then
+            IER = 1   ! Set the error flag to one 
+            exit      ! Exit the inner loop 
          end if
-         
-         ! Elimination finished, now backsubstitution
-         
-         do IP = 1, N ! Loop over the rows from bottom to top
-           
-           I = N1 - IP ! The index of the current row
-           
-           do K = N1, NT ! Loop over the columns of constants
-             
-             A(I, K) = A(I, K) / A(I, I) ! Divide by the diagonal element to get the solution
-             
-             if (I /= 1) then ! If this is not the first row
-               
-               I1 = I - 1 ! The index of the previous row
-               
-               do J = 1, I1 ! Loop over the rows above
-                 
-                 A(J, K) = A(J, K) - A(I, K) * A(J, I) ! Subtract the solution times its coefficient from other equations
-                 
-               end do
-               
-             end if
-             
-           end do
-           
+         ! Copy the Jacobian transpose times Jacobian matrix to a temporary matrix 
+         do I = 1, N
+            do J = 1, N
+               A(I,J) = XJTJ(I,J)
+            end do
          end do
+         ! Add the damping factor times the identity matrix to the temporary matrix 
+         do I = 1, N
+            A(I,I) = A(I,I) + XLAMB
+         end do
+         ! Perform Cholesky decomposition of the temporary matrix 
+         call CHOL(N,A)
+         ! Solve the linear system A * Y = -GRAD for Y using forward and backward substitution 
+         Y(1) = -GRAD(1) / A(1,1)
+            do I = 2, N
+               SUMM = 0.0d0
+               II = I -1
+               do J = 1, II
+                  SUMM = SUMM + A(I,J) * Y(J)
+               end do
+               Y(I) = (-GRAD(I) - SUMM) / A(I,I)
+            end do
+            DX(N) = Y(N) / A(N,N)
+            do I = 2, N
+               II = N - I +1
+               SUMM = 0.0d0
+               III = II +1
+               do J = III, N
+                  SUMM = SUMM + A(J,II) * DX(J)
+               end do
+               DX(II) = (Y(II) - SUMM) / A(II,II)
+            end do
+            ! Compute the new parameter values after a trial step 
+            do I = 1, N
+               XNY(I) = X(I) + DX(I)
+            end do
+            ! Evaluate the function at the new parameter values and get the sum of squared residuals 
+            call FUNC(N,M,0,XNY,SRES)
+            IEVAL = IEVAL +1   ! Increment the number of function evaluations 
+            SSQNY = SRES        ! Store the sum of squared residuals for the new parameter values 
+            ! Compute some auxiliary variables for calculating the actual and predicted reduction ratios 
+            SQ1 = 0.0d0
+            SQ2 = 0.0d0
+            do I = 1, N
+               Y(I) = XNY(I) * 300.0d0   ! This seems to be a scaling factor for some reason 
+               SQ1 = SQ1 + DX(I) **2     ! This is related to the predicted reduction in SSQ 
+               SQ2 = SQ2 - DX(I) * GRAD(I)! This is related to the predicted reduction in SSQ 
+            end do
+            ! Compute the actual and predicted reduction ratios and their quotient 
+            CCAL = SSQ - SSQNY   ! The actual reduction in SSQ 
+            CPRE = SQ2 + XLAMB * SQ1! The predicted reduction in SSQ based on a linear approximation 
+            CALPRE = CCAL / (CPRE + 1.0d-14)! The quotient of the actual and predicted reduction ratios 
+            ! Print the current values if required 
+            if (IPR ==1) write(6,601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE 
+            if (IOUT /=6 .and. IPR ==1) write(IOUT,601) ITER, SSQNY, Y(1), Y(2), GNORM, XLAMB, CALPRE 
+            ! Adjust the damping factor based on the quotient of the actual and predicted reduction ratios 
+            if (SSQ - SSQNY > 0.75 * CPRE) XLAMB = XLAMB / FAC ! If the quotient is large, decrease the damping factor by a factor of FAC 
+            if (SSQ - SSQNY < 0.25 * CPRE) XLAMB = XLAMB * FAC ! If the quotient is small, increase the damping factor by a factor of FAC 
+            if (XLAMB > XMAXL) then 
+               IER = 2 ! Set the error flag to two 
+               exit ! Exit the inner loop 
+            end if
+            ! Check the improvement in the sum of squared residuals 
+            if (SSQNY < SSQ) then 
+               ! If there is an improvement, accept the trial step and update the parameter values 
+               do I = 1, N 
+                  X(I) = XNY(I) 
+               end do 
+               exit ! Exit the inner loop 
+            else ! If there is no improvement, reject the trial step and try again with a different damping factor 
+               cycle ! Go back to the beginning of the inner loop 
+            end if
+      end do ! End of inner loop
+   end do ! End of main loop
+   ! Print the final values and flags if required 
+   if (IOUT /=6 .and. IPR ==1) write(IOUT,602) ISTOP, IER, IEVAL 
+   if (IPR ==1) write(6,602) ISTOP, IER, IEVAL
+   601 format(1X, I3, 2X, D12.4, 2F10.3, 5X, 2D12.4, 3X, F10.2)  
+   602 format(//, ' ISTOP = ', I2, 5X, 'IER = ', I2, 5X, 'IEVAL = ', I5, //)
+   603 format(///, '  ** ITERATIONCOURSE, UNIQUAC-PARAMETERS FROM UNIFAC **'/)
          
-         return
-         
-       end subroutine GAUSL
+   return
+
+end subroutine MARQ                                                        
+
+subroutine CHOL(N, A)
+   ! A subroutine to perform Cholesky decomposition on a matrix A
+   ! N is the size of the matrix
+   ! A is the matrix to be decomposed, which must be symmetric and positive definite
+   implicit none ! Declare all variables explicitly
+   integer :: N ! Declare integer variable
+   real(8) :: A(2, 2) ! Declare real variable with 8 bytes of precision
+   integer :: I, J, K, I1, J1 ! Declare loop indices and auxiliary variables
+
+   do I = 1, N ! Loop over the rows of the matrix
+      I1 = I - 1 ! The index of the previous row
+      if (I1 /= 0) then ! If this is not the first row
+         do J = I, N ! Loop over the columns from the diagonal to the right
+            do K = 1, I1 ! Loop over the previous rows
+               A(I, J) = A(I, J) - A(I, K) * A(J, K) ! Subtract the product of the lower triangular elements from the current element
+            end do
+      end do
+      end if
+      if (A(I, I) < 1.D-14) then ! If the diagonal element is too small, set it to a small positive value
+         A(I, I) = 1.D-14
+      end if
+      A(I, I) = DSQRT(A(I, I)) ! Take the square root of the diagonal element
+         if (I /= N) then ! If this is not the last row
+            J1 = I + 1 ! The index of the next row
+            do J = J1, N ! Loop over the rows below
+               A(J, I) = A(I, J) / A(I, I) ! Divide the symmetric element by the diagonal element
+            end do
+         end if
+   end do
+   return
+
+end subroutine CHOL                                                                      
+subroutine GAUSL(ND, NCOL, N, NS, A)
+   ! A subroutine to perform Gaussian elimination on a matrix A
+   ! ND is the number of rows of A
+   ! NCOL is the number of columns of A
+   ! N is the number of equations
+   ! NS is the number of right-hand sides
+   ! A is the matrix to be solved, containing both the coefficients and the constants
+   ! Subroutine gausl solves n linear algebraic equations by gauss        
+   ! Elimination with row pivoting                                        
+   ! To solve the problem qx = u, where q is a nxn matrix and u is nxns, 
+   ! One places q in the first n columns of a and u is placed in the      
+   ! Following ns columns.                                                
+   ! The program returns x = q**(-1)*u at the previous position of u.                                                                      
+   ! Nd is the row dimension and ncol is the column dimension of a.       
+   ! Both must be transferred to the subroutine.       
+   implicit none ! Declare all variables explicitly
+   integer :: ND, NCOL, N, NS ! Declare integer variables
+   real(8) :: A(ND, NCOL) ! Declare real variable with 8 bytes of precision
+   integer :: I, J, K, IP, I1 ! Declare loop indices and auxiliary variables
+   real(8) :: X ! Declare a temporary variable for swapping rows
+   integer :: N1, NT ! Declare variables for convenience
+
+   N1 = N + 1 ! The index of the first column of constants
+   NT = N + NS ! The index of the last column of constants
+
+   if (N /= 1) then ! If there is more than one equation, do elimination
+      do I = 2, N ! Loop over the rows below the first one
+         IP = I - 1 ! The index of the pivot row
+         I1 = IP ! An alias for IP
+         X = abs(A(I1, I1)) ! The absolute value of the pivot element
+         do J = I, N ! Loop over the rows below the pivot row
+            if (abs(A(J, I1)) >= X) then ! If the element is larger or equal to the pivot element, update it
+               X = abs(A(J, I1)) ! Update the pivot element value
+               IP = J ! Update the pivot row index
+            end if
+         end do
+         if (IP /= I1) then ! If the pivot row is not the original one, swap them
+            do J = I1, NT ! Loop over the columns from the pivot column to the last one
+               X = A(I1, J) ! Store the element from the original row
+               A(I1, J) = A(IP, J) ! Copy the element from the pivot row to the original row
+               A(IP, J) = X ! Copy the stored element to the pivot row
+            end do
+         end if
+         do J = I, N ! Loop over the rows below the pivot row
+            X = A(J, I1) / A(I1, I1) ! Compute the factor to eliminate the element
+            
+            do K = I, NT ! Loop over the columns from the pivot column to the last one
+               A(J, K) = A(J, K) - X * A(I1, K) ! Subtract the factor times the pivot row from the current row
+            end do
+         end do
+      end do
+   end if
+   
+   ! Elimination finished, now backsubstitution
+   
+   do IP = 1, N ! Loop over the rows from bottom to top
+      I = N1 - IP ! The index of the current row
+      do K = N1, NT ! Loop over the columns of constants
+         A(I, K) = A(I, K) / A(I, I) ! Divide by the diagonal element to get the solution
+         if (I /= 1) then ! If this is not the first row
+            I1 = I - 1 ! The index of the previous row
+            do J = 1, I1 ! Loop over the rows above
+               A(J, K) = A(J, K) - A(I, K) * A(J, I) ! Subtract the solution times its coefficient from other equations
+            end do
+         end if
+      end do
+   end do
+   return
+
+end subroutine GAUSL
                                                 
       
-      subroutine lubksb(a, n, np, indx, b)
-         ! This subroutine solves the set of n linear equations A * x = b using the LU decomposition
-         ! of a matrix A, where a is input as its LU decomposition determined by the routine ludcmp,
-         ! indx is input as the permutation vector returned by ludcmp, and b is input as the right-hand
-         ! side vector b, and returns with the solution vector x in b. The input a, n, and indx are not
-         ! modified. This routine takes into account the possibility that b will begin with many zero
-         ! elements, so that it can be used in matrix inversion.
-         implicit none 
-         integer :: n, np, indx(n) ! use :: to separate attributes from variables
-         double precision :: a(np, np), b(n) ! use double precision instead of real*8
-         integer :: i, ii, j, ll ! use meaningful names for loop indices
-         double precision :: sum ! use sum to store intermediate results
-         ii = 0 ! initialize ii to zero
-         do i = 1, n ! use do-end do loops instead of labels
-           ll = indx(i) ! get the permuted index of i
-           sum = b(ll) ! get the corresponding element of b
-           b(ll) = b(i) ! swap b(i) and b(ll)
-           if (ii /= 0) then ! use /= instead of .ne. for not equal
-             do j = ii, i-1 ! loop over previous elements of b
-               sum = sum - a(i,j) * b(j) ! update sum with matrix multiplication
-             end do
-           else if (sum /= 0.0d0) then ! use /= instead of .ne. for not equal and d0 for double precision literals
-             ii = i ! set ii to the first non-zero element of b
-           end if
-           b(i) = sum ! store the updated sum in b(i)
-         end do
-         do i = n, 1, -1 ! loop backwards from n to 1
-           sum = b(i) ! get the element of b(i)
-           do j = i+1, n ! loop over the next elements of b
-             sum = sum - a(i,j) * b(j) ! update sum with matrix multiplication
-           end do
-           b(i) = sum / a(i,i) ! divide sum by the diagonal element of a and store in b(i)
-         end do
-         return 
-       end subroutine lubksb 
+subroutine lubksb(a, n, np, indx, b)
+   ! This subroutine solves the set of n linear equations A * x = b using the LU decomposition
+   ! of a matrix A, where a is input as its LU decomposition determined by the routine ludcmp,
+   ! indx is input as the permutation vector returned by ludcmp, and b is input as the right-hand
+   ! side vector b, and returns with the solution vector x in b. The input a, n, and indx are not
+   ! modified. This routine takes into account the possibility that b will begin with many zero
+   ! elements, so that it can be used in matrix inversion.
+   implicit none 
+   integer :: n, np, indx(n) ! use :: to separate attributes from variables
+   double precision :: a(np, np), b(n) ! use double precision instead of real(8)
+   integer :: i, ii, j, ll ! use meaningful names for loop indices
+   double precision :: sum ! use sum to store intermediate results
 
-      subroutine ludcmp(a, n, np, indx, d)
-         ! This subroutine performs the LU decomposition of a matrix a
-         ! using Crout's method with partial pivoting and implicit scaling of rows
-         ! Input parameters:
-         ! a: the matrix to be decomposed, of dimension (np, np)
-         ! n: the order of the matrix a
-         ! np: the leading dimension of the array a
-         ! indx: an integer array of dimension n, to store the row permutations
-         ! Output parameters:
-         ! a: the lower and upper triangular factors of a, stored in place
-         ! indx: the row permutations effected by partial pivoting
-         ! d: the parity of the number of row interchanges (+1 or -1)
-         implicit none
-         integer, intent(in) :: n, np ! The order and leading dimension of a
-         integer, intent(out) :: indx(n) ! The row permutation vector
-         real(8), intent(inout) :: a(np, np) ! The matrix to be decomposed
-         real(8), intent(out) :: d ! The parity of row interchanges
-         integer :: i, imax, j, k ! Loop indices
-         real(8) :: aamax, dum, sum ! Temporary variables
-         real(8), dimension(n) :: vv ! The implicit scaling of each row
-       
-         ! Initialize d to +1
-         d = 1.0d0
-       
-         ! Loop over rows to get the implicit scaling information
-         do i = 1, n
-           aamax = 0.0d0 ! Initialize the maximum element in row i
-           do j = 1, n ! Loop over columns in row i
-             if (abs(a(i,j)) > aamax) then ! Update the maximum element if needed
-               aamax = abs(a(i,j))
-             end if
-           end do
-           if (aamax == 0.0d0) then ! Check for singularity
-             stop 'Singular matrix in ludcmp'
-           end if
-           vv(i) = 1.0d0 / aamax ! Store the inverse of the scaling factor for row i
+   ii = 0 ! initialize ii to zero
+   do i = 1, n ! use do-end do loops instead of labels
+      ll = indx(i) ! get the permuted index of i
+      sum = b(ll) ! get the corresponding element of b
+      b(ll) = b(i) ! swap b(i) and b(ll)
+      if (ii /= 0) then ! use /= instead of .ne. for not equal
+         do j = ii, i-1 ! loop over previous elements of b
+            sum = sum - a(i,j) * b(j) ! update sum with matrix multiplication
          end do
-       
-         ! Loop over columns of Crout's method
-         do j = 1, n
-           do i = 1, j-1 ! Calculate elements of U for column j and rows < j using equation (2.3.12)
-             sum = a(i,j)
-             do k = 1, i-1 
-               sum = sum - a(i,k) * a(k,j)
-             end do
-             a(i,j) = sum 
-           end do
-       
-           aamax = 0.0d0 ! Initialize the maximum element for the pivot
-       
-           do i = j, n ! Calculate elements of L for column j and rows >= j using equation (2.3.13)
-             sum = a(i,j)
-             do k = 1, j-1 
-               sum = sum - a(i,k) * a(k,j)
-             end do 
-             a(i,j) = sum 
-             dum = vv(i) * abs(sum) ! Calculate the figure of merit for the pivot and store it in dum
-             if (dum >= aamax) then ! Update the pivot information if needed
-               imax = i 
-               aamax = dum 
-             end if 
-           end do 
-       
-           if (j /= imax) then ! Check if we need to interchange rows 
-             do k = 1, n ! Interchange rows imax and j in matrix a 
-               dum = a(imax,k)
-               a(imax,k) = a(j,k)
-               a(j,k) = dum 
-             end do 
-             d = -d ! Change the parity of d 
-             vv(imax) = vv(j) ! Interchange the scale factor 
-           end if 
-       
-           indx(j) = imax ! Store the index of the pivot row 
-       
-           if (a(j,j) == 0.0d0) then ! Check for singularity 
-             a(j,j) = tiny(0.0d0) ! Replace zero pivot with tiny number to avoid division by zero later 
-           end if 
-       
-           if (j /= n) then ! Divide by the pivot element for rows j+1 to n using equation (2.3.14)
-             dum = 1.0d0 / a(j,j)
-             do i = j+1, n 
-               a(i,j) = a(i,j) * dum 
-             end do 
-           end if 
-       
+      else if (sum /= 0.0d0) then ! use /= instead of .ne. for not equal and d0 for double precision literals
+         ii = i ! set ii to the first non-zero element of b
+      end if
+      b(i) = sum ! store the updated sum in b(i)
+   end do
+   do i = n, 1, -1 ! loop backwards from n to 1
+      sum = b(i) ! get the element of b(i)
+      do j = i+1, n ! loop over the next elements of b
+         sum = sum - a(i,j) * b(j) ! update sum with matrix multiplication
+      end do
+      b(i) = sum / a(i,i) ! divide sum by the diagonal element of a and store in b(i)
+   end do
+   return 
+
+end subroutine lubksb 
+
+subroutine ludcmp(a, n, np, indx, d)
+   ! This subroutine performs the LU decomposition of a matrix a
+   ! using Crout's method with partial pivoting and implicit scaling of rows
+   ! Input parameters:
+   ! a: the matrix to be decomposed, of dimension (np, np)
+   ! n: the order of the matrix a
+   ! np: the leading dimension of the array a
+   ! indx: an integer array of dimension n, to store the row permutations
+   ! Output parameters:
+   ! a: the lower and upper triangular factors of a, stored in place
+   ! indx: the row permutations effected by partial pivoting
+   ! d: the parity of the number of row interchanges (+1 or -1)
+
+   implicit none
+   integer, intent(in) :: n, np ! The order and leading dimension of a
+   integer, intent(out) :: indx(n) ! The row permutation vector
+   real(8), intent(inout) :: a(np, np) ! The matrix to be decomposed
+   real(8), intent(out) :: d ! The parity of row interchanges
+   integer :: i, imax, j, k ! Loop indices
+   real(8) :: aamax, dum, sum ! Temporary variables
+   real(8), dimension(n) :: vv ! The implicit scaling of each row
+   
+   ! Initialize d to +1
+   d = 1.0d0
+   
+   ! Loop over rows to get the implicit scaling information
+   do i = 1, n
+      aamax = 0.0d0 ! Initialize the maximum element in row i
+      do j = 1, n ! Loop over columns in row i
+         if (abs(a(i,j)) > aamax) then ! Update the maximum element if needed
+            aamax = abs(a(i,j))
+         end if
+      end do
+      if (aamax == 0.0d0) then ! Check for singularity
+         stop 'Singular matrix in ludcmp'
+      end if
+      vv(i) = 1.0d0 / aamax ! Store the inverse of the scaling factor for row i
+   end do
+   
+   ! Loop over columns of Crout's method
+   do j = 1, n
+      do i = 1, j-1 ! Calculate elements of U for column j and rows < j using equation (2.3.12)
+         sum = a(i,j)
+         do k = 1, i-1 
+            sum = sum - a(i,k) * a(k,j)
+         end do
+         a(i,j) = sum 
+      end do
+   
+      aamax = 0.0d0 ! Initialize the maximum element for the pivot
+   
+      do i = j, n ! Calculate elements of L for column j and rows >= j using equation (2.3.13)
+         sum = a(i,j)
+         do k = 1, j-1 
+         sum = sum - a(i,k) * a(k,j)
          end do 
-       
-       end subroutine ludcmp
+         a(i,j) = sum 
+         dum = vv(i) * abs(sum) ! Calculate the figure of merit for the pivot and store it in dum
+         if (dum >= aamax) then ! Update the pivot information if needed
+         imax = i 
+         aamax = dum 
+         end if 
+      end do 
+   
+      if (j /= imax) then ! Check if we need to interchange rows 
+         do k = 1, n ! Interchange rows imax and j in matrix a 
+         dum = a(imax,k)
+         a(imax,k) = a(j,k)
+         a(j,k) = dum 
+         end do 
+         d = -d ! Change the parity of d 
+         vv(imax) = vv(j) ! Interchange the scale factor 
+      end if 
+   
+      indx(j) = imax ! Store the index of the pivot row 
+   
+      if (a(j,j) == 0.0d0) then ! Check for singularity 
+         a(j,j) = tiny(0.0d0) ! Replace zero pivot with tiny number to avoid division by zero later 
+      end if 
+   
+      if (j /= n) then ! Divide by the pivot element for rows j+1 to n using equation (2.3.14)
+         dum = 1.0d0 / a(j,j)
+         do i = j+1, n 
+         a(i,j) = a(i,j) * dum 
+         end do 
+      end if 
+   
+   end do 
+   
+   end subroutine ludcmp
                          
 !******************************** F I N ***************************************

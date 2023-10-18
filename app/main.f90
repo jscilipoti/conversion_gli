@@ -1,72 +1,65 @@
-program main 
-    
-    use flash 
+program main
+
+    use flash
     use fobjtype
-    
+    !use iso_fortran_env, only: 8
+
     implicit none
-    
-    integer::i
-    integer::variables
-    real(kind=8) ::fmin
-    real(kind=8) ,allocatable,dimension(:)::x
-    
-    double precision,external::conversion
-    double precision,external::praxis_n,f_n ,newton 
-    
-    OPEN (unit=333,file='salida.OUT')
+
+    integer :: i
+    integer :: variables
+    real(8) :: fmin
+    real(8), allocatable :: x(:)
+
+    interface
+        function conversion(x) result(y)
+            real(8), intent(in) :: x
+            real(8) :: y
+        end function conversion
+
+        function praxis_n(x, n) result(f)
+            real(8), intent(in) :: x(n)
+            integer, intent(in) :: n
+            real(8) :: f
+        end function praxis_n
+
+        function f_n(x, n) result(f)
+            real(8), intent(in) :: x(n)
+            integer, intent(in) :: n
+            real(8) :: f
+        end function f_n
+
+        function newton(x, n) result(f)
+            real(8), intent(in) :: x(n)
+            integer, intent(in) :: n
+            real(8) :: f
+        end function newton
+    end interface
+
+    open(333,file='salida.OUT')
     call leer_input_flash()
 
-    
     variables = 1
     allocate(x(variables))
-    
+
     x(1) = 0.0000001
-    
+
     if (.false.) then
         agextr = .true.
-        aglim = 1.D-4
+        aglim = 1.0e-4
     else
         agextr = .false.
     endif
-    
+
     !Genera una lista de concentraciones segun la funcion genDat que esta en el documento Conversion_f     
     call genDatExtr(x,variables,2,10,.false.)
-    
-    
-    pause
 
-    close (unit=333)
-endprogram main
+    stop
+
+    close(333)
+end program main
     
-subroutine leer_input_flash()
-    use InputData
-    use flash 
-    implicit none   
-   
-    integer :: N, i, j, k, ng
-    real(kind=8) :: Tx, px
-    COMMON/CUFAC/N,NG,Px(10,10),Tx
 
-    call open_file_name()
-    open(UNIT=2, file=name, status='OLD', form='FORMATTED')
-    read(2, '(36A2)') NTEXT
-    read(2, *) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq
-    call ab_ban1(modelo)
-    CALL PARIN2
-    IF(NOVAPm/=0) then                                            
-        DO J=1,N                                                                                          
-            READ(2,*) (ANT(K,J),K=1,3)                                       
-        ENDDO 
-        DO J=1,N                                                       
-            ANT(1,J)=2.302585*(ANT(1,J)-2.880814)                            
-            ANT(2,J)=2.302585*ANT(2,J)                                       
-        ENDDO 
-    endif  
-    READ(2,502) T,P
-    502 FORMAT(2F10.2) 
-    READ(2,*) (Z(I),I=1,N)
-
-end subroutine leer_input_flash
     
     
 subroutine open_file_name()
