@@ -1,5 +1,7 @@
-subroutine PARIN2           
+subroutine PARIN2 (N,NG,Px,Tx)           
     use InputData                                      
+    !implicit none
+    !integer :: I
     IMPLICIT REAL*8(A-H, O-Z)    
   !PARAMETER(NMS = 2) !, NCOM = 3, NSCM = 10)                                      
     common/asoc/nktt, igamt(20, 12), nytt(20, 12)  !, p4, p5
@@ -8,12 +10,14 @@ subroutine PARIN2
       common/ioh2/rngoh(12, 12)
 
   common/ioh2sis/rngoht(3, 2)
-    common/CUFAC/NK, NG, P(10, 10), T                                     
+    !common/CUFAC/N, NG, Px(10, 10), Tx
+    !common/CUFAC/N, NG, Px, Tx                                     
     common/CQT/QT(10, 10), Q(10), R(10)                                  
     common/CMODEL/MODEL                                               
     common/COUT/IOUT                                                  
     dimension RT(10, 10), A(100, 100), NGM(10) !, MAINSG(57)                   
-    dimension MS(10, 10, 2), NY(10, 20), JH(150), IH(20)  
+    dimension MS(10, 10, 2), NY(10, 20), JH(150), IH(20)
+    dimension Px(10,10)  
 
   dimension NPUNTA(NMG), NGRUPA(NMG), NPUNT(NMG), NGRUP(NMG) !xnoh1(12), &
 
@@ -23,6 +27,8 @@ subroutine PARIN2
     logical VL
     external mainsgfunc
                        
+    
+
     REAL*4 RR(150), QQ(150)                                              
     REAL*4    A1(32), A2(32), A3(32), A4(32), A5(32), A6(32), A7(32), A8(32), &
    A9(32), A10(32), A11(32), A12(32), A13(32), A14(32), A15(32), A16(32), A17(32)&
@@ -131,6 +137,9 @@ subroutine PARIN2
     DATA A30/331., 115.4, -58.1, 4*1., -117.4, 3*1., 173.8, 17*1., 0., 2*1.   /
     DATA A31/561.4, 784.4, 21.97, 238., 3*1., 18.41, 22*1., 0., 1.       /    
     DATA A32/956.5, 265.4, 84.16, 132.2, 27*1., 0./                        
+    
+    
+    
     do 5 I = 1, 32                                                       
     A(I, 1) = A1(I)                                                      
     A(I, 2) = A2(I)                                                      
@@ -166,17 +175,18 @@ subroutine PARIN2
   5 A(I, 32) = A32(I)                                                    
     if (IOUT.EQ.0) IOUT = 6                                              
                                                 
-    READ(2, *) NK                                                      
-    NC = NK                                                           
+    READ(2, *) N                                                      
+    NC = N                                                           
     do 15 I = 1, 10                                                      
-      do 15 J = 1, NK                                                      
+      do 15 J = 1, N                                                      
           QT(I, J) = 0.D0                                                      
  15 RT(I, J) = 0.D0                                                      
     if (MODEL.NE.1) goto 19                                            
-    NG = NK                                                             
-    do 16 I = 1, NK                                                      
+    NG = N                                                             
+    do 16 I = 1, N                                                      
                  
- 16 READ(2, *) RT(I, I), QT(I, I), (P(I, J), J = 1, NK)                         
+ !16 READ(2, *) RT(I, I), QT(I, I), (Px(I, J), J = 1, N)
+    16 READ(2, *) RT(I, I), QT(I, I), (Px(I, J), J = 1, N)                                
  19 continue                                                          
     if (MODEL.EQ.1) goto 21                                            
                                   
@@ -221,7 +231,7 @@ subroutine PARIN2
   if (NGA.GT.0) READ(2, *)(MASS(I), I = 1, NGA)
   MS(:, :, :) = 0                                                       
   JH(:) = 0                                                           
-  do 50 I = 1, NK !Lectura de compuestos
+  do 50 I = 1, N !Lectura de compuestos
     write(*, *) "----"
           READ(2, *) (MS(I, J, 1), MS(I, J, 2), j = 1, size(ms(1, :, 1)))    
       do 50 j = 1, size(ms(1, :, 1))
@@ -312,7 +322,7 @@ subroutine PARIN2
     enddo
   endif
     IC = 1                                                              
-    do 71 I = 1, NK                                                      
+    do 71 I = 1, N                                                      
       do 70 J = 1, 10                                                      
           if (MS(I, J, 1).EQ.0) goto 71                                        
           IH(IC) = MS(I, J, 1)                                                  
@@ -347,7 +357,7 @@ subroutine PARIN2
     do 72 I = 1, 10                                                      
       do 72 J = 1, 20                                                      
  72       NY(I, J) = 0                                                         
-    do 75 I = 1, NK                                                      
+    do 75 I = 1, N                                                      
       do 74 J = 1, 10                                                      
           if (MS(I, J, 1).EQ.0) goto 75                                        
           N1 = MS(I, J, 1)                                                      
@@ -364,7 +374,7 @@ subroutine PARIN2
       if (NGMNY.NE.NGMGL) I = I+1                                          
       NGM(I) = NGMNY                                                      
       NGMGL = NGMNY                                                       
-    do 80 J = 1, NK                                                      
+    do 80 J = 1, N                                                      
     RT(I, J) = RT(I, J)+NY(J, K)*RR(NSG)                                   
  80 QT(I, J) = QT(I, J)+NY(J, K)*QQ(NSG)                                   
     NG = I                                                                                                             
@@ -374,7 +384,7 @@ subroutine PARIN2
     do 20 J = 1, NG                                                      
     NI = NGM(I)                                                         
     NJ = NGM(J)                                                         
- 20 P(I, J) = A(NI, NJ)                                                                                                     
+ 20 Px(I, J) = A(NI, NJ)                                                                                                     
     do 95 K = 1, IC                                                      
  95 NN = IH(K)                                                                                                          
     if (IOUT.EQ.6) goto 99                                             
@@ -388,7 +398,7 @@ subroutine PARIN2
     if (IOUT.EQ.6) goto 26                                             
     write(IOUT, 604)                                                   
     do 27 I = 1, NG                                                      
- 27 write(IOUT, 603) (P(I, J), J = 1, NG)                                   
+ 27 write(IOUT, 603) (Px(I, J), J = 1, NG)                                   
 
 
 !ccccccccccccccccc Escritura de los par�metros de asociaci�n ALFONSINAccccccccccccccccc
@@ -447,16 +457,16 @@ subroutine PARIN2
     if (MODEL.EQ.0) write(IOUT, 605)                                    
     if (MODEL.EQ.1) write(IOUT, 627)                                    
  26 continue                                                          
-    do 30 I = 1, NK                                                      
+    do 30 I = 1, N                                                      
     Q(I) = 0.D0                                                         
     R(I) = 0.D0                                                         
     do 30 K = 1, NG                                                      
     Q(I) = Q(I)+QT(K, I)                                                 
  30 R(I) = R(I)+RT(K, I)                                                 
-    !do 40 I = 1, NK                                                      
+    !do 40 I = 1, N                                                      
  !40 write(6, 606) I, R(I), Q(I)                                          
     if (IOUT.EQ.6) goto 42                                             
-    do 41 I = 1, NK                                                      
+    do 41 I = 1, N                                                      
  41 write(IOUT, 606) I, R(I), Q(I)                                       
  42 continue      
 500 format(2x, I2, 37X, D15.8, 120X, 3I2)                                                     

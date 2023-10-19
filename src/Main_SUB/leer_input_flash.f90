@@ -3,18 +3,25 @@ subroutine leer_input_flash()
     use flash 
     implicit none    
     integer::N,i,j,k,ng
-    real*8::Tx,px
-    COMMON/CUFAC/N,NG,Px(10,10),Tx
+    !real*8::Tx,px
+    real*8::Tx
+    real*8,dimension(10,10):: Px
+    !COMMON/CUFAC/N,NG,Px(10,10),Tx
+    COMMON/CUFAC/N,NG,Px,Tx
 
     
     
     call open_file_name()
+    
     OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
     READ(2,501) NTEXT   
     501 FORMAT(36A2)  
+    
     READ(2,*) ICALC,modelo,IPRm,IOUTm,NOVAPm,igm, ipareq     
+    
     call ab_ban1(modelo)
-    CALL PARIN2
+    CALL PARIN2(N,NG,Px,Tx)
+    
     IF(NOVAPm/=0) then                                             
         DO 6 J=1,N                                                        
 !C   6 READ(2,502) (ANT(K,J),K=1,3)                                      
