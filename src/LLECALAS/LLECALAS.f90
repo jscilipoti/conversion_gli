@@ -44,12 +44,13 @@ subroutine llecalas(Tf, Pf, Zf)
 
       use InputData
       use flashout
+      use CUFAC
       IMPLICIT REAL*8(A-H, O-Z)      !C QUITAR                                    
       EXTERNAL STABIL, GMIX, FUNC                                         
       common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
       common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4),&
       & GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
-      common/CUFAC/N, NG, P(10, 10), T                                      
+      !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                      
       common/CY/Y13, Y21, STEP                                            
       common/CA/XC(5), GE(5, 2), GC(5, 2)                                   
       common/CIPR/IPR                                                   
@@ -114,24 +115,24 @@ subroutine llecalas(Tf, Pf, Zf)
 
       T1 = 0.                                                             
       NN = 0                                                              
-      T = Tf
+      Txx = Tf
       PP = Pf
-      if (T.EQ.0.) then
+      if (Txx.EQ.0.) then
          if(IOUT.EQ.1) CLOSE (UNIT = 1)
          close (unit = 3)
          return
       endif
 
       if (PP/=  0..and.NOVAP/=  0) then
-         do I = 1, N
-         PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(T-273.15+ANT(3, I))
+         do I = 1, NKK
+         PRAT(I) = DLOG(PP)-ANT(1, I)+ANT(2, I)/(Txx-273.15+ANT(3, I))
          enddo                                                    
       endif
 
       Z(:) = Zf(:)
       ZSUM = 0.                                                           
       ZMAX = 0.                                                           
-      do I = 1, N                                                       
+      do I = 1, NKK                                                       
          ZSUM = ZSUM+Z(I)                                                    
          if (Z(I).LT.ZMAX) cycle                                          
          ZMAX = Z(I)                                                         
@@ -140,15 +141,15 @@ subroutine llecalas(Tf, Pf, Zf)
       enddo                                                            
       15 continue 
 
-      if (.not.(T.EQ.T1)) then !goto 30                                               
+      if (.not.(Txx.EQ.T1)) then !goto 30                                               
          call PARAM2                                                       
          if (.not.(ICALC.NE.1)) then                                            
-            if (N.NE.2.AND.N.NE.3) write(6, 616)                                
-            if (IOUT.NE.6.AND.N.NE.2.AND.N.NE.3) write(IOUT, 616)               
+            if (NKK.NE.2.AND.NKK.NE.3) write(6, 616)                                
+            if (IOUT.NE.6.AND.NKK.NE.2.AND.NKK.NE.3) write(IOUT, 616)               
             Y13 = Z(1)                                                          
             Y21 = Z(2)                                                                                                           
-            if (IOUT.NE.6) write(IOUT, 633) T                                   
-            if (.not.(N.EQ.3)) then                                                
+            if (IOUT.NE.6) write(IOUT, 633) Txx                                   
+            if (.not.(NKK.EQ.3)) then                                                
                call SOLBIN                                                       
             if(IOUT.EQ.1) CLOSE (UNIT = 1)
             close (unit = 3)
@@ -166,8 +167,8 @@ subroutine llecalas(Tf, Pf, Zf)
          !16 continue
 
          if (.not.(ICALC.NE.2)) then                                           
-            if (N.NE.2) write(6, 616)                                           
-            if (IOUT.NE.6.AND.N.NE.2) write(IOUT, 616)                          
+            if (NKK.NE.2) write(6, 616)                                           
+            if (IOUT.NE.6.AND.NKK.NE.2) write(IOUT, 616)                          
             XC(1) = 0.                                                          
             XC(2) = .2D0                                                        
             XC(3) = .5D0                                                        
@@ -199,18 +200,18 @@ subroutine llecalas(Tf, Pf, Zf)
             do I = 1, 2                                                       
                do J = 1, 2                                                       
                   QT(I, J) = 0.                                                        
-                  P(I, J) = 0.                                                         
+                  Pxx(I, J) = 0.                                                         
                enddo
             enddo
             QT(1, 1) = Q(1)                                                      
             QT(2, 2) = Q(2)                                                      
             NK = 2                                                              
-            NG = 2                                                              
+            NGG = 2                                                              
             XLAMB = 1.                                                          
             call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
-            write(6, 633) T                                                    
-            if (IOUT.NE.6) write(IOUT, 633) T                                   
-            write(6, 617) P(1, 2), P(2, 1)       
+            write(6, 633) Txx                                                    
+            if (IOUT.NE.6) write(IOUT, 633) Txx                                   
+            write(6, 617) Pxx(1, 2), Pxx(2, 1)       
             !(///, ' ** UNIQUAC PARAMETERS FROM UNIFAC **',
             !//, 5X, 'A12/R = ', F12.3, ' K , A21/R = ', F12.3, ' K', ///)                                  
             if (IPR.EQ.1) write(6, 618)                                         
@@ -225,7 +226,7 @@ subroutine llecalas(Tf, Pf, Zf)
             if (IPR.EQ.1) write(6, 619) ((GC(L, I), L = 1, 5), I = 1, 2)                 
       
             if (.not.(IOUT.EQ.6)) then                                             
-               write(IOUT, 617) P(1, 2), P(2, 1)                                     
+               write(IOUT, 617) Pxx(1, 2), Pxx(2, 1)                                     
                if (IPR.EQ.1) write(IOUT, 618)                                      
                if (IPR.EQ.1) write(IOUT, 619) ((GE(L, I), L = 1, 5), I = 1, 2)              
                if (IPR.EQ.1) write(IOUT, 619) ((GC(L, I), L = 1, 5), I = 1, 2)
@@ -238,8 +239,8 @@ subroutine llecalas(Tf, Pf, Zf)
          endif
 
          !19 continue                                                          
-         do I = 1, N                                                       
-            do J = 1, N                                                       
+         do I = 1, NKK                                                       
+            do J = 1, NKK                                                       
                GAM(I, J) = 0.D0                                                     
                if (.not.(J.EQ.I)) then                                               
                   call GAMINF(I, J, G)                                                
@@ -250,18 +251,18 @@ subroutine llecalas(Tf, Pf, Zf)
 
          !20 continue                                                          
       endif
-      30 T1 = T                                                              
+      30 T1 = Txx                                                              
       NN = NN+1                                                                                                       
-      do I = 1, N                                                       
+      do I = 1, NKK                                                       
          Z(I) = Z(I)/ZSUM  
       enddo
 
       if (IOUT.NE.6) write(IOUT, 602) NN                                  
-      if (IOUT.NE.6) write(IOUT, 605) T, PP, ZSUM, (Z(I), I = 1, N)              
+      if (IOUT.NE.6) write(IOUT, 605) Txx, PP, ZSUM, (Z(I), I = 1, NKK)              
       call unifac(1, Z, AL, DA, PACT)                                       
       SFAS(1) = 1.                                                        
       GNUL = 0.                                                           
-      do I = 1, N                                                       
+      do I = 1, NKK                                                       
          XVL(I, 1) = 1.                                                       
          Z(I) = Z(I)+1.D-20                                                  
          DLX(I) = DLOG(Z(I))                                                 
@@ -274,57 +275,57 @@ subroutine llecalas(Tf, Pf, Zf)
       !if (S.GT.-1.D-7) goto 70
       if (.not.(S.GT.-1.D-7)) then
          if (IOUT.NE.6) write(IOUT, 603)                                     
-         do I = 1, N                                                       
+         do I = 1, NKK                                                       
             YVAL(I) = 1.D-5*Y(I)/Z(I)
          enddo
          60 continue                                                          
          !goto 100
       else
          70 continue
-         do I = 1, N                                                       
+         do I = 1, NKK                                                       
             YVAL(I) = DLOG(Y(I))  
          enddo
 
          XLAM = 1.                                                                              
          if (IOUT.NE.6.AND.NF.EQ.1.AND.IPR.GT.0) write(IOUT, 606)            
          if (IOUT.NE.6.AND.NF.GT.1.AND.IPR.GT.0) write(IOUT, 609) NF         
-         call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+         call TMSSJ(30, NKK, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
   
          if (.not.(FUN.LT.-1.D-7)) then                                        
             write(output, *) 1
-            write(output, 2613) (Z(j), J = 1, N)
-            write(output, 2613) (AL(j), j = 1, N)        
+            write(output, 2613) (Z(j), J = 1, NKK)
+            write(output, 2613) (AL(j), j = 1, NKK)        
             write(output, *) "SYSTEM IS STABLE"                                                   
-	         write(7, 46) T, (xM(l, 1), l = 1, N)   
-	         write(7, 46) T, (xM(l, 2), l = 1, N)
+	         write(7, 46) Txx, (xM(l, 1), l = 1, NKK)   
+	         write(7, 46) Txx, (xM(l, 2), l = 1, NKK)
 	         write(7, *)                    
             if (IOUT.NE.6) write(IOUT, 604)
          endif
 
          80 if (IOUT.NE.6) write(IOUT, 603)                                     
-         do I = 1, N                                                       
+         do I = 1, NKK                                                       
             YVAL(I) = 1.D-5*DEXP(YVAL(I))/Z(I)   
          enddo
       endif
                        
   100 NF = NF+1
 
-  !104 do 105 I = 1, N                                                      
+  !104 do 105 I = 1, NKK                                                      
   !      if (YVAL(I).GT.1.D0) goto 106                                      
   !105 continue                                                          
   !    goto 109                                                          
-  !106 do 107 I = 1, N                                                      
+  !106 do 107 I = 1, NKK                                                      
   !107   YVAL(I) = YVAL(I)/10.                                               
   !    goto 104                                                          
   !109 continue
   
   outer:  do while (YVAL(I).GT.1.D0)
-            do I = 1, N
+            do I = 1, NKK
                 if (.not.(YVAL(I).GT.1.D0)) then
                   exit outer
                endif
             enddo
-            do I = 1, N
+            do I = 1, NKK
                YVAL(I) = YVAL(I)/10.
             enddo
          enddo outer
@@ -332,11 +333,11 @@ subroutine llecalas(Tf, Pf, Zf)
       SFAS(NF) = 1.                                                       
       XLAM = .2                                                           
       if (NF.EQ.2) XLAM = .5                                               
-      M = (NF-1)*N                                                                                          
+      M = (NF-1)*NKK                                                                                          
       if (IOUT.NE.6.AND.IPR.GT.0) write(IOUT, 607) NF                     
       call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
-      NT = NF*N                                                           
-      NB = NT-N                                                           
+      NT = NF*NKK                                                           
+      NB = NT-NKK                                                           
       do I = 1, NB                                                     
          YVAL(NT+1-I) = YVAL(NB+1-I)
       enddo
@@ -354,25 +355,25 @@ subroutine llecalas(Tf, Pf, Zf)
       if (IOUT.NE.6) write(IOUT, 611)(J, SFAS(J), J = 1, NF)                   
       if (IOUT.NE.6) write(IOUT, 612) (J, J = 1, NF)                          
       SUM = 0.                                                            
-      do I = 1, N                                                      
+      do I = 1, NKK                                                      
          DLX(I) = XVL(I, NF)*Z(I)/SFAS(NF)                                    
          SUM = SUM+DLX(I)
       enddo
 
       SUM = DLOG(SUM)                                                     
       call unifac(1, DLX, A, DA, PACT)                                      
-      do I = 1, N                                                      
+      do I = 1, NKK                                                      
          DLX(I) = DLOG(DLX(I))                                               
          A(I) = A(I)+DLX(I)-SUM
       enddo
 
 !-------------------------------------------------------------------------------
       do j = 1, nf
-         do i = 1, n
+         do i = 1, NKK
             xmj(i) = xm(i, j)
          enddo
          call unifac(1, xmj, actgam, de, pe)
-         do i = 1, n
+         do i = 1, NKK
             agam(i, j) = actgam(i)
          enddo
       enddo
@@ -380,12 +381,12 @@ subroutine llecalas(Tf, Pf, Zf)
       write (output, *) NF
       compfases(:, :) = xm(:, :)
       do i = 1, NF !escribe resultados para el output que sera leido por excel
-        write(output, 2613) (XM(j, i), J = 1, N)
-        write(output, 2613) (agam(j, i), j = 1, N)  
+        write(output, 2613) (XM(j, i), J = 1, NKK)
+        write(output, 2613) (agam(j, i), j = 1, NKK)  
       enddo
     
       if (.not.(IOUT.EQ.6)) then                                            
-         do I = 1, N                                                      
+         do I = 1, NKK                                                      
             write(IOUT, 613) I, (XM(I, J), J = 1, NF)    
             write(iout, 1613) i, (agam(i, j), j = 1, nf)
          enddo
@@ -449,4 +450,4 @@ subroutine llecalas(Tf, Pf, Zf)
 
 !###############################################################################                                                                 
 
-!******************************** F I N ***************************************
+!******************************** F I NKK ***************************************

@@ -1,4 +1,5 @@
 subroutine unifac(NDIF, X, ACT, DACT, PACT)                           
+    use CUFAC
     IMPLICIT REAL*8(A-H, O-Z)                                          
 
     common/asoc/nktt, igamt(20, 12), nytt(20, 12)   
@@ -7,7 +8,7 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     deloh(6, 12, 6, 12)!Alfonsin
 
     common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
-    common/CUFAC/NK, NG, P(10, 10), T                                     
+    !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                     
     common/CPAR/TAU(10, 10), S(10, 10), F(10)                             
     common/CQT/QT(10, 10), Q(10), R(10)                                  
     dimension X(10), GAM(10), ACT(10), DACT(10, 10), THETA(10), PHI(10),&
@@ -49,29 +50,29 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
 
     THETS = 0.                                                          
     PHS = 0.                                                            
-    do 10 I = 1, NK                                                      
+    do 10 I = 1, NKK                                                      
     THETA(I) = X(I)*Q(I)                                                
     PHI(I) = R(I)*X(I)                                                  
     THETS = THETS+THETA(I)                                              
  10 PHS = PHS+PHI(I)                                                    
-    do 20 I = 1, NK                                                      
+    do 20 I = 1, NKK                                                      
     RI(I) = R(I)/PHS                                                    
     RIL(I) = DLOG(RI(I))                                                
     QI(I) = Q(I)/THETS                                                  
  20 QIL(I) = DLOG(QI(I))                                                
 
-    do 33 i = 1, nk
+    do 33 i = 1, NKK
     goh(i) = 0.
     tgt(i) = 0.0
     xnohi0 = 0.0
     xgam = 0.0
    
-    do j = 1, nk
+    do j = 1, NKK
       tgt(j) = 0.0
       xgam = 0.0
   end do
  33 continue
-    do i = 1, nk
+    do i = 1, NKK
   if(nga.gt.0) then
   
       do k = 1, nktt
@@ -87,7 +88,7 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
 
     xnoh1 = 0d0
   do ja = 1, nga
-      do i = 1, nk
+      do i = 1, NKK
       xnoh1(ja) = xnoh1(ja)+rngoh(i, ja)*x(i)
     end do
     end do
@@ -95,21 +96,21 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     do ja = 1, nga
       xnoh(ja) = xnoh1(ja)/xgam
   end do
-    do 40 I = 1, NG                                                      
+    do 40 I = 1, NGG                                                      
     ETA(I) = 0.                                                         
-    do 45 J = 1, NK                                                      
+    do 45 J = 1, NKK                                                      
  45 ETA(I) = ETA(I)+S(I, J)*X(J)                                         
  40 ETAL(I) = DLOG(ETA(I))                                              
-    do 55 I = 1, NG                                                      
+    do 55 I = 1, NGG                                                      
     TETAR(I) = 0.                                                       
-    do 55 J = 1, NK                                                      
+    do 55 J = 1, NKK                                                      
  55 TETAR(I) = TETAR(I)+QT(I, J)*X(J)                                    
-    do 60 I = 1, NK                                                      
+    do 60 I = 1, NKK                                                      
     QID(I) = 1.-RI(I)/QI(I)                                             
     XX = F(I)+Q(I)*(1.-QIL(I))-RI(I)+RIL(I)                             
     XX = XX-5.*Q(I)*(QID(I)+RIL(I)-QIL(I))                              
     ACT(I) = XX                                                         
-    do 661 J = 1, NG                                                     
+    do 661 J = 1, NGG                                                     
     U(J, I) = S(J, I)/ETA(J)                                              
     V(J, I) = U(J, I)*TETAR(J)                                            
 661 ACT(I) = ACT(I)-V(J, I)-QT(J, I)*ETAL(J)                              
@@ -124,7 +125,7 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
                                 if (ENASS(K, m, L, J).EQ.0) then
                                        continue
                                   else
-    deloh(k, m, l, j) = (DEXP(ENASS(K, m, L, J)/T) - 1 )*RKASS(K, m, L, J)
+    deloh(k, m, l, j) = (DEXP(ENASS(K, m, L, J)/Txx) - 1 )*RKASS(K, m, L, J)
                                 endif 
                               enddo
                       enddo
@@ -222,22 +223,22 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     NDUM = 0                                                            
     if (NOVAP.EQ.0) goto 69                                            
     SS = 0                                                              
-    do 61 I = 1, NK                                                      
+    do 61 I = 1, NKK                                                      
  61 SS = SS+X(I)*(PRAT(I)-ACT(I))                                       
     if (SS.GT.0.) goto 69                                              
     NDUM = 1                                                            
-    do 62 I = 1, NK                                                      
+    do 62 I = 1, NKK                                                      
     ACT(I) = PRAT(I)                                                    
-    do 62 J = 1, NK                                                      
+    do 62 J = 1, NKK                                                      
  62 DACT(I, J) = 0.                                                      
     goto 100                                                          
  69 continue                                                          
     if (NDIF.EQ.4) goto 90                                             
     if (NDIF.LT.2) goto 100                                            
-    do 70 I = 1, NK                                                      
-    do 70 J = I, NK                                                      
+    do 70 I = 1, NKK                                                      
+    do 70 J = I, NKK                                                      
     XX = Q(I)*QI(J)*(1.-5.*QID(I)*QID(J))+(1.-RI(I))*(1.-RI(J))         
-    do 75 K = 1, NG                                                      
+    do 75 K = 1, NGG                                                      
  75 XX = XX+U(K, I)*(V(K, J)-QT(K, J))-U(K, J)*QT(K, I)                      
 
 !********************************calculo de dxkdni Alfonsina**************************************
@@ -351,11 +352,11 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     DACT(I, J) = XX                                                      
  70 DACT(J, I) = XX    
      if (NDIF.LT.3) goto 100                                           
-    do 80 I = 1, NK                                                      
+    do 80 I = 1, NKK                                                      
     GAM(I) = DEXP(ACT(I))                                               
  80 ACT(I) = GAM(I)*X(I)                                                
-    do 85 I = 1, NK                                                      
-    do 85 J = 1, NK                                                      
+    do 85 I = 1, NKK                                                      
+    do 85 J = 1, NKK                                                      
     DACT(I, J) = ACT(I)*(DACT(I, J)-1.D0)                                 
     if (J.EQ.I)DACT(I, J) = DACT(I, J)+GAM(I)                              
  85 continue                                                          
@@ -370,8 +371,8 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     H2 = QT(K, I)-S(L, I)*TETAR(K)/ETA(L)                                 
     DTAU(I, K, L) = -H1*H2/ETA(L)                                         
  91 continue                                                          
-    do 92 I = 1, NK                                                      
-    PACT(I, 1) = -DTAU(I, 1, 2)*TAU(1, 2)/T*300.D0                          
- 92 PACT(I, 2) = -DTAU(I, 2, 1)*TAU(2, 1)/T*300.D0                          
+    do 92 I = 1, NKK                                                      
+    PACT(I, 1) = -DTAU(I, 1, 2)*TAU(1, 2)/Txx*300.D0                          
+ 92 PACT(I, 2) = -DTAU(I, 2, 1)*TAU(2, 1)/Txx*300.D0                          
 100 return                                                            
     end 

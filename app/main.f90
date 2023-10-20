@@ -2,6 +2,7 @@ program main
     
     use flash 
     use fobjtype
+    use CUFAC
     
     implicit none
     
@@ -41,7 +42,7 @@ program main
     !call genDatosGraf(40)
     
     
-    pause
+    !pause
 
     close (unit=333)
 endprogram main

@@ -1,6 +1,7 @@
 subroutine GAMINF(N1, N2, GAM)                                      
-    IMPLICIT REAL*8(A-H, O-Z)                                          
-    common/CUFAC/NK, NG, P(10, 10), T                                     
+    use CUFAC
+    IMPLICIT REAL*8(A-H, O-Z)                                  
+    !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                     
     common/CPAR/TAU(10, 10), S(10, 10), F(10)                             
     common/CQT/QT(10, 10), Q(10), R(10)                                  
 !-------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ subroutine GAMINF(N1, N2, GAM)
     R1 = R(N2)/R(N1)                                                    
     QR = R1/Q1                                                          
     GAM = F(N2)+Q(N2)*(1.-DLOG(Q1))-R1+DLOG(R1)-5.D0*Q(N2)*(1.-QR+DLOG(R1)-DLOG(Q1))                                                      
-    do 10 I = 1, NG                                                      
+    do 10 I = 1, NGG                                                      
  10 GAM = GAM-S(I, N2)/S(I, N1)*QT(I, N1)-QT(I, N2)*DLOG(S(I, N1))           
 
     return                                                            

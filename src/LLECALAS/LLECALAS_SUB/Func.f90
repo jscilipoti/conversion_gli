@@ -1,14 +1,17 @@
 subroutine FUNC(N, M, NDIF, X, SSQ)                                   
-    IMPLICIT REAL*8(A-H, O-Z)                                          
+      use CUFAC 
+      IMPLICIT REAL*8(A-H, O-Z)
+      !implicit none                                          
     common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
-    common/CMARQ/GRAD(2), XJTJ(2, 2)                                    
-    common/CUFAC/NK, NG, P(10, 10), T                                     
+    common/CMARQ/GRAD(2), XJTJ(2, 2)
+                                       
+    !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                     
     common/CA/XC(5), GE(5, 2), GC(5, 2)                                   
     dimension X(2), F(2)                                               
     JD = 0                                                              
     if (NDIF.EQ.1) JD = 4                                                
-    P(1, 2) = X(1)*300.D0                                                
-    P(2, 1) = X(2)*300.D0                                                
+    Pxx(1, 2) = X(1)*300.D0                                                
+    Pxx(2, 1) = X(2)*300.D0                                                
     call PARAM2                                                       
     SSQ = 0.                                                            
     if (NDIF.EQ.0) goto 11                                             
