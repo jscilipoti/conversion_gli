@@ -1,7 +1,8 @@
 subroutine STABIL(N, NDIF, FUN, GRAD, XMAT, Y)                         
-    IMPLICIT REAL*8(A-H, O-Z)                                          
+    use CGIBBS
+   IMPLICIT REAL*8(A-H, O-Z)                                          
     common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
-    common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
+    !common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
     dimension GRAD(30), XMAT(30, 30), Y(30), YEX(10), XEX(10)              
     common/nga/nga, mass(12)
 

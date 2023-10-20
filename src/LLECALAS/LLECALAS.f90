@@ -45,15 +45,20 @@ subroutine llecalas(Tf, Pf, Zf)
       use InputData
       use flashout
       use CUFAC
+      use CVAP
+      use CGIBBS
+      use CY
+      use CA
+      use CIPR
       IMPLICIT REAL*8(A-H, O-Z)      !C QUITAR                                    
       EXTERNAL STABIL, GMIX, FUNC                                         
-      common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
-      common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4),&
-      & GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
+      !common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
+      !common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4),&
+      !& GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
       !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                      
-      common/CY/Y13, Y21, STEP                                            
-      common/CA/XC(5), GE(5, 2), GC(5, 2)                                   
-      common/CIPR/IPR                                                   
+      !common/CY/Y13, Y21, STEP                                            
+      !common/CA/XC(5), GE(5, 2), GC(5, 2)                                   
+      !common/CIPR/IPR                                                   
       common/CQT/QT(10, 10), Q(10), R(10)                                  
       common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10),&
       & DACT2(10, 10), PACT(2, 2)                                                     
@@ -63,7 +68,8 @@ subroutine llecalas(Tf, Pf, Zf)
       common/ig/ig
       dimension DLX(10), YVAL(30), Y(10), GRAD(30), XMAT(30, 30), WORK(30, 5)  
       dimension X(2)         
-      integer::MODEL, IPR, IOUT, NOVAP, ig            
+      !integer::MODEL, IPR, IOUT, NOVAP, ig
+      integer::MODEL, IOUT, ig            
       character(len = 36):: name1 
       integer:: parameters 
       real*8::Zf(10)

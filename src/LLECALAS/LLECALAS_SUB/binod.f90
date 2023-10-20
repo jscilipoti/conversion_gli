@@ -1,6 +1,7 @@
 subroutine BINOD                                                  
+    use CY
     IMPLICIT REAL*8 (A-H, O-Z)                                         
-    common/CY/Y13, Y21, STEP                                            
+    !common/CY/Y13, Y21, STEP                                            
     common/COUT/IOUT                                                  
     dimension YMAT(70, 6), NITE3(70)                                    
     common/CBISO/NIC1, NIC2, IC1(120), IC2(120)                          

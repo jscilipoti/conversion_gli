@@ -1,8 +1,9 @@
 subroutine MARQ(FUNC, N, M, X, XLAMB, FAC, EPSG, MAXF)                   
+    Use CIPR
     IMPLICIT REAL*8(A-H, O-Z)                                          
     common/COUT/IOUT                                                  
     common/CMARQ/GRAD(2), XJTJ(2, 2)                                    
-    common/CIPR/IPR                                                   
+    !common/CIPR/IPR                                                   
     dimension X(2), Y(2), XNY(2), A(2, 2), DX(2)                           
     IEVAL = 0                                                           
     ISTOP = 0                                                           

@@ -1,10 +1,12 @@
 subroutine STIG(Y, S)                                              
     use CUFAC
+    use CVAP
+    use CGIBBS
    IMPLICIT REAL*8(A-H, O-Z)                                          
-    common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
+    !common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
     !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                      
     common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
-    common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AA(10), DA(10, 10), XM(10, 4)                                       
+    !common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
     dimension Y(10), V(10), YGEM(10)                                    
     common/nga/nga, mass(12)
     JPUR = 0                                                            
@@ -35,10 +37,10 @@ subroutine STIG(Y, S)
     do 43 K = 1, NA                                                      
     do 36 I = 1, NKK                                                       
  36 Y(I) = Y(I)/SUM                                                     
-    call unifac(1, Y, AA, DA, PACT)                                       
+    call unifac(1, Y, AL, DA, PACT)                                       
     if (K.EQ.NA) goto 44                                               
     do 41 I = 1, NKK                                                       
- 41 Y(I) = DEXP(A(I)-AA(I))                                             
+ 41 Y(I) = DEXP(A(I)-AL(I))                                             
  42 SUM = 0.                                                            
     do 43 I = 1, NKK                                                       
  43 SUM = SUM+Y(I)                                                      
@@ -47,7 +49,7 @@ subroutine STIG(Y, S)
     do 50 J = 1, NF                                                      
  50 V(J) = 0.                                                           
     do 60 I = 1, NKK                                                       
-    GD = DLOG(Y(I))+AA(I)-A(I)                                          
+    GD = DLOG(Y(I))+AL(I)-A(I)                                          
     YV1 = YV1+Y(I)*GD                                                   
     do 60 J = 1, NF                                                      
     K = J                                                               

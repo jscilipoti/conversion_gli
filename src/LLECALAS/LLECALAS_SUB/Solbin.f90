@@ -1,7 +1,8 @@
 subroutine SOLBIN                                                 
-    IMPLICIT REAL*8(A-H, O-Z)                                          
+   use CY 
+   IMPLICIT REAL*8(A-H, O-Z)                                          
     common/CACT/X1(10), X2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
-    common/CY/Y13, Y21, STEP                                            
+    !common/CY/Y13, Y21, STEP                                            
     common/COUT/IOUT                                                  
     dimension DMAT(2, 3)                                               
     common/nga/nga, mass(12)

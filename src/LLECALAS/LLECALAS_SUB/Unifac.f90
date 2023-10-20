@@ -1,5 +1,6 @@
 subroutine unifac(NDIF, X, ACT, DACT, PACT)                           
     use CUFAC
+    use CVAP
     IMPLICIT REAL*8(A-H, O-Z)                                          
 
     common/asoc/nktt, igamt(20, 12), nytt(20, 12)   
@@ -7,7 +8,7 @@ subroutine unifac(NDIF, X, ACT, DACT, PACT)
     common/grupas1/rkass(6, 12, 6, 12), enass(6, 12, 6, 12),&
     deloh(6, 12, 6, 12)!Alfonsin
 
-    common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
+    !common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
     !common/CUFAC/NKK, NGG, Pxx(10, 10), Txx                                     
     common/CPAR/TAU(10, 10), S(10, 10), F(10)                             
     common/CQT/QT(10, 10), Q(10), R(10)                                  

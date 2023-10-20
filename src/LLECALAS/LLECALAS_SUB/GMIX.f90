@@ -1,8 +1,10 @@
 subroutine GMIX(NARG, NDIF, FUN, GRAD, XMAT, YVAL)                     
-    IMPLICIT REAL*8(A-H, O-Z)                                          
-    common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
+   use CVAP
+   use CGIBBS 
+   IMPLICIT REAL*8(A-H, O-Z)                                          
+    !common/CVAP/NOVAP, NDUM, IDUM(4), PRAT(10)                           
     common/CACT/Y1(10), Y2(10), ACT1(10), ACT2(10), DACT1(10, 10), DACT2(10, 10), PACT(2, 2)                                                     
-    common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), XX(10), DA(10, 10), XM(10, 4)                                       
+    !common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
     dimension YVAL(30), GRAD(30), X(10), TM(10), FG(10), XMAT(30, 30)       
     NG = NF-1                                                           
     N = NARG/NG                                                         
@@ -33,9 +35,9 @@ subroutine GMIX(NARG, NDIF, FUN, GRAD, XMAT, YVAL)
     X(I) = XVL(I, J)*Z(I)                                                
  60 SFAS(J) = SFAS(J)+X(I)                                              
     do 65 I = 1, N                                                       
-    XX(I) = X(I)/SFAS(J)                                                
- 65 XM(I, J) = XX(I)                                                     
-    call unifac(JD, XX, FG, DA, PACT)                                     
+    AL(I) = X(I)/SFAS(J)                                                
+ 65 XM(I, J) = AL(I)                                                     
+    call unifac(JD, AL, FG, DA, PACT)                                     
     IDUM(J) = NDUM                                                      
     do 70 I = 1, N                                                       
     TM(I) = DLOG(XVL(I, J)/SFAS(J))+FG(I)                                

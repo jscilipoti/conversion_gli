@@ -1,7 +1,9 @@
-subroutine CHECK(N, YVAL)                                          
+subroutine CHECK(N, YVAL)
+   use CGIBBS
+   use CIPR                                          
     IMPLICIT REAL*8(A-H, O-Z)                                          
-    common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
-    common/CIPR/IPR                                                   
+    !common/CGIBBS/NF, MAXZ, GNUL, Z(10), A(10), XVL(10, 4), SFAS(4), GAM(10, 10), AL(10), DA(10, 10), XM(10, 4)                                       
+    !common/CIPR/IPR                                                   
     common/COUT/IOUT                                                  
     dimension YVAL(30)                                                
     JMAX = NF                                                           
