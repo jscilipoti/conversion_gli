@@ -1,5 +1,5 @@
 program check
-   
+    use do_tests
     use flash 
     use fobjtype
     use CUFAC
@@ -14,8 +14,14 @@ program check
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
     print *,""
-    print *, "ULL7-Test"
+    print *, test_run//"ULL7-Test"
     print *,""
+    if (ULL7_check) then
+        continue
+    else 
+        print *, test_disabled
+        goto 999
+    endif
     pause
     OPEN (unit=333,file='salida.OUT')
     call leer_input_flash_ULL7()
@@ -48,7 +54,8 @@ program check
     !pause
 
     close (unit=333)
-
+    print *, test_ok
+    999 continue
 end program check
 
 subroutine leer_input_flash_ULL7()
