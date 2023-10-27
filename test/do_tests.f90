@@ -9,6 +9,7 @@ module do_tests
     character*24,parameter :: test_ok = "Ok! "
     character*24,parameter :: test_disabled = "This test is disabled."
     character*24,parameter :: test_error = "ERROR! "
+    
     logical,parameter:: ALL7_check = .false.
     logical,parameter:: ULL7_check = .false.
     logical,parameter:: ALV7_check = .true.

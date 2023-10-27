@@ -1,5 +1,6 @@
 program check
     use do_tests
+    use ALV7_values
     use flash 
     use fobjtype
     use CUFAC
@@ -10,9 +11,12 @@ program check
     integer::variables
     real*8::fmin
     real*8,allocatable,dimension(:)::x
+    real*4,dimension(10)::zf_check
+    real*4,dimension(3)::ksalida_check
     
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
+
     print *,""
     print *, test_run//"ALV7-Test"
     print *,""
@@ -25,36 +29,30 @@ program check
     pause
     OPEN (unit=333,file='salida.OUT')
     call leer_input_flash_ALV7()
-
-    
     variables = 1
     allocate(x(variables))
-    
     x(1) = 0.0000001
-    
-    !Ve en el caso de la extraccion del agua    
     if (.false.) then
         agextr = .true.
         aglim = 1.D-4
     else
         agextr = .false.
     endif
-    
-    !Optimiza la funcion f_n en el documento Fobj
-    !FMIN = praxis_n ( 3.D-4, 1.D1, variables, 3, x, f_n )
-    
-    !Genera una lista de concentraciones segun la funcion genDat que esta en el documento Conversion_f     
-    !call genDat(x,variables)
-    
-    call genDatExtr(x,variables,2,10,.false.)
-    
-    !Genera una espacion de datos de la funcion objetivo en todos los valores posibles de X
-    !call genDatosGraf(40)
-    
-    
-    !pause
-
+    call genDatExtr_ALV7(x,variables,2,10,.false.,zf_check,ksalida_check)
     close (unit=333)
+    
+    !Check if everything went OK
+    if (abs(zf_check(1) - ALV7_data(1))>1E-8) ERROR STOP "Zf of component 1 has changed"
+    if (abs(zf_check(2) - ALV7_data(2))>1E-8) ERROR STOP "Zf of component 2 has changed"
+    if (abs(zf_check(3) - ALV7_data(3))>1E-8) ERROR STOP "Zf of component 3 has changed"
+    if (abs(zf_check(4) - ALV7_data(4))>1E-8) ERROR STOP "Zf of component 4 has changed"
+    if (abs(zf_check(5) - ALV7_data(5))>1E-8) ERROR STOP "Zf of component 5 has changed"
+    if (abs(zf_check(6) - ALV7_data(6))>1E-8) ERROR STOP "Zf of component 6 has changed"
+    if (abs(zf_check(7) - ALV7_data(7))>1E-8) ERROR STOP "Zf of component 7 has changed"
+    if (abs(ksalida_check(1) - ALV7_data(8))>1E-8) ERROR STOP "K1 has changed"
+    if (abs(ksalida_check(2) - ALV7_data(9))>1E-8) ERROR STOP "K2 has changed"
+    if (abs(ksalida_check(3) - ALV7_data(10))>1E-8) STOP "K3 has changed"
+
     print *, test_ok
     999 continue
 end program check
@@ -112,3 +110,43 @@ subroutine open_file_name_ALV7()
     CLOSE (UNIT=1)  
 
 endsubroutine open_file_name_ALV7
+
+subroutine genDatExtr_ALV7(x,n,extI,extS,temp,zf_check,ksalida_check)
+    use Flash
+    use flashout
+
+    implicit none
+    logical::temp,proc
+    integer::extI,extS,camb
+    integer,intent(in)::n
+    real*8::x(n)
+    real*8,dimension(size(z))::zf
+    doubleprecision::obj
+    real*4,intent(out),dimension(3)::ksalida_check
+    real*4,intent(out),dimension(10)::zf_check
+    
+    integer::i
+    
+    i = extI
+    camb = 1
+    proc = .true.
+    x(1) = i
+    call conversion(zf)
+    !Escribe en el documento de salida las condiciones
+    write(*,'(A,F10.8)') "Acido: ",zf(1)
+    write(*,'(A,F10.8)') "Gly: ", zf(2)
+    write(*,'(A,F10.8)') "Mono: ", zf(3)
+    write(*,'(A,F10.8)') "Di: ", zf(4)
+    write(*,'(A,F10.8)') "Tri: ", zf(5)
+    write(*,'(A,F10.8)') "Agua: ", zf(6)
+    write(*,'(A,F10.8)') "Tol: ", zf(7)
+    i = i + camb
+    write(*,'(A,F10.8)') "K1: ", ksalida(1)
+    write(*,'(A,F10.8)') "K2: ", ksalida(2)
+    write(*,'(A,F10.8)') "K3: ", ksalida(3)
+    ksalida_check(1)=ksalida(1)
+    ksalida_check(2)=ksalida(2)
+    ksalida_check(3)=ksalida(3)
+    zf_check = zf
+
+endsubroutine genDatExtr_ALV7
