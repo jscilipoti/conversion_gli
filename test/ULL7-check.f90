@@ -15,7 +15,7 @@ program check
     double precision,external::praxis_n,f_n ,newton 
     print *,""
     print *, test_run//"ULL7-Test"
-    print *,""
+
     if (ULL7_check) then
         continue
     else 
@@ -51,7 +51,7 @@ program check
     !call genDatosGraf(40)
     
     
-    !pause
+    if (pause_test) pause
 
     close (unit=333)
     print *, test_ok

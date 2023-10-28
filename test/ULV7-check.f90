@@ -19,14 +19,13 @@ program check
 
     print *,""
     print *, test_run//"ULV7-Test"
-    print *,""
     if (ULV7_check) then
         continue
     else 
         print *, test_disabled
         goto 999
     endif
-    pause
+    if (pause_test) pause
     OPEN (unit=333,file='salida.OUT')
     call leer_input_flash_ULV7()
     variables = 1
@@ -133,17 +132,17 @@ subroutine genDatExtr_ULV7(x,n,extI,extS,temp,zf_check,ksalida_check)
     x(1) = i
     call conversion(zf)
     !Escribe en el documento de salida las condiciones
-    write(*,'(A,F10.8)') "Acido: ",zf(1)
-    write(*,'(A,F10.8)') "Gly: ", zf(2)
-    write(*,'(A,F10.8)') "Mono: ", zf(3)
-    write(*,'(A,F10.8)') "Di: ", zf(4)
-    write(*,'(A,F10.8)') "Tri: ", zf(5)
-    write(*,'(A,F10.8)') "Agua: ", zf(6)
-    write(*,'(A,F10.8)') "Tol: ", zf(7)
+    !write(*,'(A,F10.8)') "Acido: ",zf(1)
+    !write(*,'(A,F10.8)') "Gly: ", zf(2)
+    !write(*,'(A,F10.8)') "Mono: ", zf(3)
+    !write(*,'(A,F10.8)') "Di: ", zf(4)
+    !write(*,'(A,F10.8)') "Tri: ", zf(5)
+    !write(*,'(A,F10.8)') "Agua: ", zf(6)
+    !write(*,'(A,F10.8)') "Tol: ", zf(7)
     i = i + camb
-    write(*,'(A,F10.8)') "K1: ", ksalida(1)
-    write(*,'(A,F10.8)') "K2: ", ksalida(2)
-    write(*,'(A,F10.8)') "K3: ", ksalida(3)
+    !write(*,'(A,F10.8)') "K1: ", ksalida(1)
+    !write(*,'(A,F10.8)') "K2: ", ksalida(2)
+    !write(*,'(A,F10.8)') "K3: ", ksalida(3)
     ksalida_check(1)=ksalida(1)
     ksalida_check(2)=ksalida(2)
     ksalida_check(3)=ksalida(3)

@@ -16,7 +16,7 @@ program check
     
     print *,""
     print *, test_run//"ALL7-Test"
-    print *,""
+    
     if (ALL7_check) then
         continue
     else 
@@ -54,7 +54,7 @@ program check
     !call genDatosGraf(40)
     
     
-    !pause
+    if (pause_test) pause
 
     close (unit=333)
     print *, test_ok
