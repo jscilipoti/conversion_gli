@@ -45,4 +45,6 @@ program main
     !pause
 
     close (unit=333)
+    print *,""
+    print *, "Main program ended succesfully"
 endprogram main

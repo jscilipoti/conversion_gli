@@ -56,8 +56,11 @@ subroutine genDatExtr(x,n,extI,extS,temp)
             i = i + camb
    !     endif
  !   enddo
-    !verbose!write(*,*) "K1", ksalida(1)
-    !verbose!write(*,*) "K2", ksalida(2)
-    !verbose!write(*,*) "K3", ksalida(3)
+    !verbose!
+            write(*,'(A,F10.8)') "K1: ", ksalida(1)
+    !verbose!
+            write(*,'(A,F10.8)') "K2: ", ksalida(2)
+    !verbose!
+            write(*,'(A,F10.8)') "K3: ", ksalida(3)
 
 endsubroutine genDatExtr

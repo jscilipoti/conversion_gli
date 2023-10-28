@@ -10,12 +10,10 @@ subroutine open_file_name
     implicit none
     
     integer::parameters = 0
-    character(len=8):: filename = "name.dat"
-    character(len=36), dimension(2) :: file_data
+    character(len=name_maxlen), dimension(2) :: file_data
     
     ! Open the file for reading
-    !open (newunit=file_unit,file=filename,status='OLD',action='READ')
-    call open_file(filename,file_data,2,36)
+    call open_file(name_filename,file_data,2,name_maxlen)
 
      ! Read the number of parameters and the name from the file
     parameters = ichar(trim(file_data(1)))
