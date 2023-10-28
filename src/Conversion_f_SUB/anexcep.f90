@@ -38,8 +38,8 @@ function anexcep(esp,minmar,x)
                 xcic(3) = xcic(2)
             endif
             do while ((FMIN > minmar) .and. (xcic(1) + xcic(2) + xcic(3) < limS) .and. ((xcic(3)/3. + xcic(2)/2. + xcic(1)/1.) < 1))
-                write(*,*) xcic
-                !write(*,*) xcic(3)/3 + xcic(2)/2 + xcic(1)/1
+                !verbose!write(*,*) xcic
+                !!verbose!write(*,*) xcic(3)/3 + xcic(2)/2 + xcic(1)/1
                 do i=1,3
                     if (FMIN > minmar) then
                         x(1) = xcic(datx(i,1))/3.
@@ -47,13 +47,13 @@ function anexcep(esp,minmar,x)
                         x(3) = xcic(datx(i,3))/1.
                         if (x(1)+x(2)+x(3) < 1) then
                             FMIN = praxis_n(1.D-5,5.D-2,variables,0,x,F)
-                            write(*,*) FMIN
+                            !verbose!write(*,*) FMIN
                             if (sum(xcic(:)) < 1.D-10) goto 10
                         endif
                     endif
                 enddo
 10              xcic(3) = xcic(3) + pas
-                write(*,*)
+                !verbose!write(*,*)
             enddo
             xcic(2) = xcic(2) + pas
         enddo

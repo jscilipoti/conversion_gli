@@ -55,10 +55,10 @@ doubleprecision function f(x,n)
                 act(i) = compfases(i,2)*exp(agam(i,2))
             endif
         enddo
-        write(*,*) compfases(1,1),compfases(2,1),compfases(3,1),compfases(4,1),&
-        compfases(5,1),compfases(6,1),compfases(7,1)
-        write(*,*) agam(1,1),agam(2,1),agam(3,1),agam(4,1),&
-        agam(5,1),agam(6,1),agam(7,1)
+        !verbose!write(*,*) compfases(1,1),compfases(2,1),compfases(3,1),compfases(4,1),&
+        !compfases(5,1),compfases(6,1),compfases(7,1)
+        !verbose!write(*,*) agam(1,1),agam(2,1),agam(3,1),agam(4,1),&
+        !agam(5,1),agam(6,1),agam(7,1)
         !c�lculo de Keq(clac)
         Keqcalc(1) = act(3)*act(6)/(act(2)*act(1))
         Keqcalc(2) = act(4)*act(6)/(act(3)*act(1))

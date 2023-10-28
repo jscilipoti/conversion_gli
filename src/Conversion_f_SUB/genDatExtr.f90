@@ -17,11 +17,11 @@ subroutine genDatExtr(x,n,extI,extS,temp)
     proc = .true.
     !do while ((proc) .and. (i <= extS) .and. (i >= extI))
         
-        write(*,*)
-        write(*,*)
-        write(*,*) i
-        write(*,*)
-        write(*,*)
+        !verbose!write(*,*)
+        !verbose!write(*,*)
+        !verbose!write(*,*) i
+        !verbose!write(*,*)
+        !verbose!write(*,*)
         
         x(1) = i
         !T = x(1) + 273.15
@@ -44,20 +44,20 @@ subroutine genDatExtr(x,n,extI,extS,temp)
             !Escribe en el documento de salida las condiciones
         open(unit=3333,file="salida3.out",status="old")
             write(3333,*) i,";",zf(1),";",zf(2),";",zf(3),";",zf(4),";",zf(5),";",zf(6),";",zf(7)
-            write(*,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
-            write(*,*) "Acido: ",zf(1)
-            write(*,*) "Gly: ", zf(2)
-            write(*,*) "Mono: ", zf(3)
-            write(*,*) "Di: ", zf(4)
-            write(*,*) "Tri: ", zf(5)
-            write(*,*) "Agua: ", zf(6)
-            write(*,*) "Tol: ", zf(7)
+            !verbose!write(*,*) i,zf(1),zf(2),zf(3),zf(4),zf(5),zf(6),zf(7)
+            !verbose!write(*,*) "Acido: ",zf(1)
+            !verbose!write(*,*) "Gly: ", zf(2)
+            !verbose!write(*,*) "Mono: ", zf(3)
+            !verbose!write(*,*) "Di: ", zf(4)
+            !verbose!write(*,*) "Tri: ", zf(5)
+            !verbose!write(*,*) "Agua: ", zf(6)
+            !verbose!write(*,*) "Tol: ", zf(7)
             close(unit=3333)
             i = i + camb
    !     endif
  !   enddo
-    write(*,*) "K1", ksalida(1)
-    write(*,*) "K2", ksalida(2)
-    write(*,*) "K3", ksalida(3)
+    !verbose!write(*,*) "K1", ksalida(1)
+    !verbose!write(*,*) "K2", ksalida(2)
+    !verbose!write(*,*) "K3", ksalida(3)
 
 endsubroutine genDatExtr

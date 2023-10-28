@@ -44,10 +44,10 @@ subroutine conversion(zf)
     
     fobj = .false. !se llama desde conversion
     
-    write(*,*) x
+    !verbose!write(*,*) x
     FMIN = praxis_n(1.D-5,5.D-2,variables,0,x,F)
-    write(*,*) FMIN
-    write(*,*)
+    !verbose!write(*,*) FMIN
+    !verbose!write(*,*)
     
     esp = 23
     

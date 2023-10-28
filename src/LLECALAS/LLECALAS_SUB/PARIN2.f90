@@ -232,13 +232,13 @@ subroutine PARIN2 (N,NG,Px,Tx)
   MS(:, :, :) = 0                                                       
   JH(:) = 0                                                           
   do 50 I = 1, N !Lectura de compuestos
-    write(*, *) "----"
+    !verbose!write(*, *) "----"
           READ(2, *) (MS(I, J, 1), MS(I, J, 2), j = 1, size(ms(1, :, 1)))    
       do 50 j = 1, size(ms(1, :, 1))
           igamt(j, i) = ms(i, j, 1)
           nytt(j, i) = ms(i, j, 2)
-          write(*, *)ms(i, j, 1)
-          write(*, *)ms(i, j, 2)
+          !verbose!write(*, *)ms(i, j, 1)
+          !verbose!write(*, *)ms(i, j, 2)
 50  continue	
 
   NUM = 0

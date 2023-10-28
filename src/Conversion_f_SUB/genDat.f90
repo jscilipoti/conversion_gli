@@ -14,11 +14,11 @@ subroutine genDat(x,n)
         
         x(1) = (i - 1)/50. + 0.000000001 !+ 393.15
         
-        write(*,*)
-        write(*,*)
-        write(*,*) i
-        write(*,*)
-        write(*,*)
+        !verbose!write(*,*)
+        !verbose!write(*,*)
+        !verbose!write(*,*) i
+        !verbose!write(*,*)
+        !verbose!write(*,*)
     
         !z(1) = x(1)
         !aglim = x(1)
