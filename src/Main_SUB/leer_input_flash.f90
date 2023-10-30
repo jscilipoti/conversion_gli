@@ -12,8 +12,7 @@ subroutine leer_input_flash(name_filename)
     implicit none    
     integer::i,j,k
 
-    !call get_NamePar()
-    integer::parameters = 0
+    integer :: parameters = 0
     character(len=*), intent(in) :: name_filename
     character(len=name_maxlen), dimension(2) :: file_data
     
@@ -34,7 +33,7 @@ subroutine leer_input_flash(name_filename)
         stop
     endif
     
-    OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
+    Open (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
     READ(2,501) NTEXT   
     501 FORMAT(36A2)  
     
