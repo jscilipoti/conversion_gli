@@ -1,19 +1,38 @@
-subroutine leer_input_flash()
+subroutine leer_input_flash(name_filename)
+    ! This Fortran subroutine opens a file and reads its contents. 
+    ! It first reads the number of parameters and then reads the name of the 
+    ! file which contains the data for the flash calculation. 
+    ! The subroutine then removes the leading and trailing quotes from the name.
+    ! If the number of parameters is 1, the subroutine reads the bases from the 
+    ! file using the `LeerBases()` subroutine and stops the program. Finally, 
+    ! the file is closed.
     use InputData
     use flash
     use CUFAC 
     implicit none    
     integer::i,j,k
-    !integer::N,i,j,k,ng
-    !real*8::Tx,px
-    !real*8::Tx
-    !real*8,dimension(10,10):: Px
-    !COMMON/CUFAC/N,NG,Px(10,10),Tx
-    !COMMON/CUFAC/N,NG,Px,Tx
 
+    !call get_NamePar()
+    integer::parameters = 0
+    character(len=*), intent(in) :: name_filename
+    character(len=name_maxlen), dimension(2) :: file_data
     
     
-    call open_file_name()
+    ! Open the file for reading
+    call open_textfile(name_filename,file_data,2,name_maxlen)
+
+     ! Read the number of parameters and the name from the file
+    parameters = ichar(trim(file_data(1)))
+    name = file_data(2)
+
+    ! Remove the leading and trailing quotes from the name
+    name = name(2:len_trim(name)-1)
+
+    ! If the number of parameters is 1, read the bases from the file
+    if (parameters==1)then
+        call LeerBases()
+        stop
+    endif
     
     OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
     READ(2,501) NTEXT   

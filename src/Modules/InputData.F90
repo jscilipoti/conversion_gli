@@ -28,7 +28,7 @@ module InputData
 
     integer(kind=int32) :: output
     ! The name of the file with the filename of the flash-parameters-file.
-    character(len=8) :: name_filename = "name.dat"
+    !character(len=8) :: name_filename = "name.dat"
     ! The max character lenght of the filename with the flash parameters.
     integer(kind=int32), parameter :: name_maxlen = 36
     ! The filename of the flash-parameters-file.

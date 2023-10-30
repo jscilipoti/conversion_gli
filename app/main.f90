@@ -10,12 +10,13 @@ program main
     integer::variables
     real*8::fmin
     real*8,allocatable,dimension(:)::x
+    character(len=*),parameter :: name_filename = "name.dat"
     
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
-    
+
     OPEN (unit=333,file='salida.OUT')
-    call leer_input_flash()
+    call leer_input_flash(name_filename)
 
     
     variables = 1

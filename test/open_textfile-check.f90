@@ -7,7 +7,7 @@ program check
     print *,""
     print *, test_run//"open_file-check"
     if (pause_test) pause
-    call open_file(filename,array,2,36)
+    call open_textfile(filename,array,2,36)
     if (open_file_check) then
         if (filename/="name.dat")&
             ERROR STOP "Filename has been changed."

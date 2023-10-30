@@ -13,7 +13,7 @@ program check
     real*8,allocatable,dimension(:)::x
     real*4,dimension(10)::zf_check
     real*4,dimension(3)::ksalida_check
-    
+    character(len=*),parameter :: name_filename =  "test/ULV7.dat"
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
 
@@ -27,7 +27,8 @@ program check
     endif
     if (pause_test) pause
     OPEN (unit=333,file='salida.OUT')
-    call leer_input_flash_ULV7()
+    call leer_input_flash(name_filename)
+    !call leer_input_flash_ULV7()
     variables = 1
     allocate(x(variables))
     x(1) = 0.0000001

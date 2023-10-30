@@ -1,4 +1,4 @@
-subroutine open_file(filename,array,max_lines,max_chars)
+subroutine open_textfile(filename,array,max_lines,max_chars)
     ! A subroutine that reads each line of a file and saves its values in an 
     ! array. There is a maximum number of lines in the file and
     ! maximum number of characters per line allowed to read.
@@ -39,4 +39,4 @@ subroutine open_file(filename,array,max_lines,max_chars)
     
     close(file_unit) ! close the file
 
-end subroutine open_file
+end subroutine open_textfile
