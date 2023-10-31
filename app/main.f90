@@ -3,6 +3,13 @@ program main
     !Normally class names will begin with capital letters and other identifiers 
     !will be all lower case. It is also common practice to start private 
     !identifiers with an underscore.
+    !camelCase or CamelCase uses capitalization of the first letter of words 
+    !in a variable name to make it easier to read. 
+    !In some cases the first letter of the variable may be capitalized. 
+    !The variable tempFahrenheit was one example of camelCase. 
+    !Again, if we consider the examples from the previous section, 
+    !we might consider the variable name fmiStationID or simply stationID 
+    !if we elect to use camelCase.
     use flash 
     use fobjtype
     use CUFAC

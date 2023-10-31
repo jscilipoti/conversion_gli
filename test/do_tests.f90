@@ -11,14 +11,15 @@ module do_tests
     ULL7_check,&
     ALV7_check,&
     ULV7_check,&
-    open_file_check
+    open_file_check,&
+    leer_input_flash_check
   
  
     ! These are module variables that can be used by any program unit that uses this module
-    character*14,parameter :: test_run = "Running test: "
-    character*24,parameter :: test_ok = "Ok! "
-    character*24,parameter :: test_disabled = "This test is disabled."
-    character*24,parameter :: test_error = "ERROR! "
+    character(len=*),parameter :: test_run = "Running test: "
+    character(len=*),parameter :: test_ok = "Ok! "
+    character(len=*),parameter :: test_disabled = "This test is disabled."
+    character(len=*),parameter :: test_error = "ERROR! "
     
     logical,parameter :: pause_test = .false.
 
@@ -27,6 +28,7 @@ module do_tests
     logical,parameter :: ALV7_check = .true.
     logical,parameter :: ULV7_check = .true.
     logical,parameter :: open_file_check = .true.
+    logical,parameter :: leer_input_flash_check = .true.
 
     
   

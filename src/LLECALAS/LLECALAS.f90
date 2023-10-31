@@ -114,7 +114,8 @@ subroutine llecalas(Tf, Pf, Zf)
          if (NOVAP.NE.0) write(IOUT, 629)                                    
          if (MODEL.EQ.0) write(IOUT, 624)                                    
          if (MODEL.EQ.1) write(IOUT, 625)                                    
-         write(IOUT, 623) NTEXT  
+         write(IOUT, 623) NTEXT
+           
       endif
 
       5 continue                                                          

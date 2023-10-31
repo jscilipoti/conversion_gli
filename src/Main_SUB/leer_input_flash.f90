@@ -39,8 +39,9 @@ subroutine leer_input_flash(name_filename)
     
     open(unit=2,file=name,status='old',form='formatted')
     ! Read the first line of the flash calc input file where the name is.
-    read(2,'(36A2)') NTEXT
-    
+    !read(2,'(36A2)') NTEXT
+    read(2,*) NTEXT
+
     ! Read some info related to the calculation (see InputData module...)   
     read(2,*) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq     
     
