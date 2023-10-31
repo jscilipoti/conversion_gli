@@ -42,7 +42,9 @@ module InputData
 
     ! A string with the first line of the flash calc input file. It is usually
     ! the same name in the namefile
-    integer(kind=int32), dimension(name_maxlen) :: NTEXT
+    !integer(kind=int32), dimension(name_maxlen) :: NTEXT
+    !characterlen=2), dimension(name_maxlen) :: NTEXT
+    character(len=name_maxlen) :: NTEXT
     
     real(kind=real64), dimension(10,3):: ANT
     
