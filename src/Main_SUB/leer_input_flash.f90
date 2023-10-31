@@ -34,7 +34,7 @@ subroutine leer_input_flash(name_filename)
     ! If the number of doLeerBases is 1, read the bases from the file
     if (doLeerBases == 1) then
         call leerBases()
-        !stop
+        stop
     endif
     
     open(unit=2,file=name,status='old',form='formatted')
