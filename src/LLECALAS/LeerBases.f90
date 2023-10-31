@@ -1,4 +1,4 @@
-subroutine LeerBases()
+subroutine leerBases()
     use InputData
     implicit none
     integer::model,  Ncomp, i, j, k,cant,parameters, irec, mgr,ICS,ITS1,ITS2,num,nga,ng,aa,bb
@@ -208,4 +208,4 @@ subroutine LeerBases()
     close (unit=2)
     close (unit=3)
     pause
-endsubroutine LeerBases
+endsubroutine leerBases

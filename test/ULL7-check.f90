@@ -105,7 +105,7 @@ subroutine open_file_name_ULL7()
     name = "test/ULL7-"//name
     !name = "test/llecalas2.dat"
     if (parameters==1)then
-        call LeerBases()
+        call leerBases()
         stop
     endif    
     CLOSE (UNIT=1)  

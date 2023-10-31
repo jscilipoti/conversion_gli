@@ -1,5 +1,8 @@
 program main 
-    
+    !TENER EN CUENTA
+    !Normally class names will begin with capital letters and other identifiers 
+    !will be all lower case. It is also common practice to start private 
+    !identifiers with an underscore.
     use flash 
     use fobjtype
     use CUFAC
