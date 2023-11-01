@@ -14,7 +14,7 @@ subroutine leerBases()
     open (unit=3,FILE="parameters.dat",FORM='FORMATTED')
     
     read(2,"(3i1)") model, ipareq, Ncomp
-    call ab_ban1(model)
+    call open_database(model)
 
     ms(:,:,:)=0
     do i=1,Ncomp

@@ -98,7 +98,7 @@ subroutine llecalas(Tf, Pf, Zf)
       !           4-'GC-EOS parameters'
   
    
-    !  call ab_ban1(model) ahora se llama desde el main
+    !  call open_database(model) ahora se llama desde el main
 	   if(IOUT.EQ.1) OPEN (UNIT = 1, FILE = 'lleasoccuzada.OUT',&
       & FORM = 'FORMATTED')
       OPEN (UNIT = 3, FILE = 'output.OUT', FORM = 'FORMATTED')

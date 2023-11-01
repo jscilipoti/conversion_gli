@@ -83,7 +83,7 @@ subroutine leer_input_flash_ULV7()
     
     READ(2,*) ICALC,modelo,IPRm,IOUTm,NOVAPm,igm, ipareq     
     
-    call ab_ban1(modelo)
+    call open_database(modelo)
     CALL PARIN2(NKK,NGG,Pxx,Txx)
     
     IF(NOVAPm/=0) then                                             

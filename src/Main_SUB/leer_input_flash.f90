@@ -45,7 +45,7 @@ subroutine leer_input_flash(name_filename)
     ! Read some info related to the calculation (see InputData module...)   
     read(2,*) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq     
     
-    call ab_ban1(modelo)
+    call open_database(modelo)
     call PARIN2(NKK, NGG, Pxx, Txx)
     
     ! The following code is run whether vapor phase is not included in flash
