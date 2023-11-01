@@ -12,7 +12,8 @@ module do_tests
     ALV7_check,&
     ULV7_check,&
     open_file_check,&
-    leer_input_flash_check
+    leer_input_flash_check,&
+    open_database_check
   
  
     ! These are module variables that can be used by any program unit that uses this module
@@ -29,6 +30,7 @@ module do_tests
     logical,parameter :: ULV7_check = .true.
     logical,parameter :: open_file_check = .true.
     logical,parameter :: leer_input_flash_check = .true.
+    logical,parameter :: open_database_check = .true.
 
     
   
