@@ -68,12 +68,12 @@ subroutine open_textfile(filename,array,max_lines,max_chars)
     character(len=max_chars), dimension(max_lines):: array 
     
     integer(kind=int16) :: i, n, stat
-    integer(kind=int16) :: file_unit
+    integer(kind=int16) :: openTextFile_unit
     
     ! Name of the file to open
     character(len=*),intent(in) :: filename
     
-    open(unit=file_unit, file=filename,&
+    open(newunit=openTextFile_unit, file=filename,&
         &status='old', action='read', iostat=stat) ! open the file for reading
     if (stat /= 0) then ! check for errors
         print *, 'Error opening file ', filename
@@ -82,7 +82,7 @@ subroutine open_textfile(filename,array,max_lines,max_chars)
     
     n = 0 ! number of lines read
     do i = 1, max_lines ! loop over the lines
-        read(file_unit, '(A)', iostat=stat) array(i) ! read a line into the array
+        read(openTextFile_unit, '(A)', iostat=stat) array(i) ! read a line into the array
         if (stat == -1) exit ! end of file reached
         if (stat /= 0) then ! check for errors
         print *, 'Error reading file ', filename
@@ -91,6 +91,6 @@ subroutine open_textfile(filename,array,max_lines,max_chars)
         n = n + 1 ! increment the number of lines read
     end do
     
-    close(file_unit) ! close the file
+    close(openTextFile_unit) ! close the file
 
 end subroutine open_textfile
