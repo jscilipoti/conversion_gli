@@ -1,12 +1,13 @@
 program check
     use do_tests
+    ! Units available to open a file:
+    use openunits, only: intrcn32_unit, qPar150_unit, rPar150_unit
     use iso_fortran_env!, only: int16, real32, real64 
     
     implicit none
     integer(kind=int16) :: i, j
     
-    ! Units available to open a file:
-    integer(kind=int16) :: intrcn32_unit, qPar150_unit, rPar150_unit
+    
     ! Here the interaction parameters are dim 100 because
     ! there is a maximum of 10 different functional groups in total
     real(kind=real64),dimension(100,100) :: A 
@@ -313,7 +314,7 @@ program check
 
         !if ("string" /= "string")& 
         !     &ERROR STOP ""
-        
+
         ! Check if intrcn32_data and A are different)
         do i = 1, 32
             do j = 1, 32

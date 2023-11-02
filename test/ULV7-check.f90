@@ -77,7 +77,7 @@ subroutine leer_input_flash_ULV7()
     
     call open_file_name_ULV7()
     
-    OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
+    OPEN (UNIT=2,FILE=flashInput_name,status='OLD',FORM='FORMATTED')
     READ(2,501) NTEXT   
     501 FORMAT(36A2)  
     
@@ -109,10 +109,10 @@ subroutine open_file_name_ULV7()
     !apertura de bases de datos generadas desde excel
     OPEN (UNIT=1,FILE='test/ULV7-name.dat',status='OLD',FORM='FORMATTED')
     read(1,*)parameters 
-    read(1,"(A36)") name
-    name = name(2:len_trim(name)-1)
-    name = "test/ULV7-"//name
-    !name = "test/llecalas2.dat"
+    read(1,"(A36)") flashInput_name
+    flashInput_name = flashInput_name(2:len_trim(flashInput_name)-1)
+    flashInput_name = "test/ULV7-"//flashInput_name
+
     if (parameters==1)then
         call leerBases()
         stop

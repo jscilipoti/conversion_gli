@@ -35,7 +35,7 @@ module InputData
     ! The max character lenght of the filename with the flash parameters.
     integer(kind=int32), parameter :: name_maxlen = 36
     ! The filename of the flash-parameters-file.
-    character(len=name_maxlen) :: name
+    character(len=name_maxlen) :: flashInput_name
     ! A matrix with the size of (the max site number per group x
     ! Max size of the arrays which contains subgroups' data)
     real(kind=real64), dimension(NMG,NMG) :: aint1

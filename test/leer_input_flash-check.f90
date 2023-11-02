@@ -2,7 +2,7 @@ program check
     !ANT, NGG, Pxx, Txx: No fueron checkeados
     use do_tests
     use InputData, only:&
-    &name, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
+    &flashInput_name, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
     &ANT,NTEXT
     use flash, only: P, T, Z
     use CUFAC, only: NKK, NGG, Pxx, Txx
@@ -17,8 +17,8 @@ program check
         if (pause_test) pause
         call leer_input_flash("test/name.dat")
         !Check if everything went OK
-        if (name /= "test/llecalas2.dat")& 
-            &ERROR STOP "'name' was not read correctly."
+        if (flashInput_name /= "test/llecalas2.dat")& 
+            &ERROR STOP "'flashInput_name' was not read correctly."
         if (abs(ICALC - 0) > 1E-8)&
             &ERROR STOP "'ICALC' was not read correctly."
         if (abs(modelo - 0) > 1E-8)&

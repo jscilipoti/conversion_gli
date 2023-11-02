@@ -7,16 +7,19 @@ subroutine leer_input_flash(name_filename)
     ! file using the `leerBases()` subroutine. Finally, 
     ! the file is closed.
 
+    use CUFAC, only: NKK, NGG, Pxx, Txx
+    use flash, only: P, T, Z
     use iso_fortran_env, only: int16, int8
     use InputData, only:&
-        &name, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
+        &flashInput_name, name_maxlen,&
+        &ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
         &ANT,NTEXT
-    use flash, only: P, T, Z
-    use CUFAC, only: NKK, NGG, Pxx, Txx
+    use openunits, only: flashInput_unit
+    
     
     implicit none    
     
-    integer(kind=int16):: i, j, k
+    integer(kind=int16):: i, j, k, stat
     integer(kind=int8) :: doLeerBases = 0
     character(len=*), intent(in) :: name_filename
     character(len=name_maxlen), dimension(2) :: file_data
@@ -26,20 +29,33 @@ subroutine leer_input_flash(name_filename)
 
      ! Read the number of parameters and the name from the file
     doLeerBases = ichar(trim(file_data(1)))
-    name = file_data(2)
+    flashInput_name = file_data(2)
 
     ! Remove the leading and trailing quotes from the name
-    name = name(2:len_trim(name)-1)
+    flashInput_name = flashInput_name(2:len_trim(flashInput_name)-1)
 
     ! If the number of doLeerBases is 1, read the bases from the file
     if (doLeerBases == 1) then
         call leerBases()
         stop
-    endif
+    end if
     
-    open(unit=2,file=name,status='old',form='formatted')
+    !Old way to open flashInput file
+    open(unit=2, file=flashInput_name, status='old', form='formatted',&
+        &action='read', iostat=stat)
+    if (stat /= 0) then ! check for errors
+        print *, 'Error opening file ', flashInput_name
+        ERROR STOP 'Error opening file.'
+    end if
+    !New way to open flashInput file
+    open(newunit=flashInput_unit, file=flashInput_name, status='old',&
+        &form='formatted', action='read', iostat=stat)
+    if (stat /= 0) then ! check for errors
+        print *, 'Error opening file ', flashInput_name
+        ERROR STOP 'Error opening file.'
+    end if
+
     ! Read the first line of the flash calc input file where the name is.
-    !read(2,'(36A2)') NTEXT
     read(2,*) NTEXT
 
     ! Read some info related to the calculation (see InputData module...)   
@@ -53,12 +69,12 @@ subroutine leer_input_flash(name_filename)
     if(NOVAPm /= 0) then                                             
         do j = 1, NKK                                                                                           
             read(2,*) (ANT(k,j), k = 1, 3)                                        
-        enddo
+        end do
         do j = 1, NKK                                                        
             ANT(1,j) = 2.302585 * (ANT(1,j) - 2.880814)                             
             ANT(2,j) = 2.302585 * ANT(2,j)
-        enddo                                        
-    endif
+        end do                                        
+    end if
 
     ! Read the Temperature and the Pressure at the end of the flash input file
     read(2,'(2F10.2)') T, P
@@ -66,6 +82,7 @@ subroutine leer_input_flash(name_filename)
     ! Read the composition of each component of the system.
     read(2,*) (Z(i), i = 1, NKK) 
     
+    close(flashInput_unit)
     close(unit=2)
 
-endsubroutine leer_input_flash
+end subroutine leer_input_flash

@@ -10,7 +10,7 @@ subroutine leerBases()
     real*8::r,q,rrt,ENASST,RKASST
     logical::esta,vl
 
-    open (unit=2,FILE=name,status='OLD',FORM='FORMATTED')
+    open (unit=2,FILE=flashInput_name,status='OLD',FORM='FORMATTED')
     open (unit=3,FILE="parameters.dat",FORM='FORMATTED')
     
     read(2,"(3i1)") model, ipareq, Ncomp

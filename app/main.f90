@@ -21,8 +21,8 @@ program main
     integer::i
     integer::variables
     real*8::fmin
-    real*8,allocatable,dimension(:)::x
-    character(len=*),parameter :: name_filename = "name.dat"
+    real*8,allocatable, dimension(:)::x
+    character(len=*), parameter :: name_filename = "name.dat"
     
     double precision,external::conversion
     double precision,external::praxis_n,f_n ,newton 
