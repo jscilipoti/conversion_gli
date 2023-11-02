@@ -10,6 +10,8 @@ program main
     !Again, if we consider the examples from the previous section, 
     !we might consider the variable name fmiStationID or simply stationID 
     !if we elect to use camelCase.
+
+    !Crear Modulo con las newunits para abrir archivos
     use flash 
     use fobjtype
     use CUFAC
