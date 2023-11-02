@@ -1,18 +1,26 @@
 program check
     use do_tests
-    use iso_fortran_env, only: int8, real32, real64 
+    use iso_fortran_env!, only: int16, real32, real64 
     
     implicit none
-    integer(kind=int8) :: i,j
-    real(kind=real64),dimension(100,100) :: A !Aca van los parametros de inteaccion es de dim 100 porque hay un maximo de 10 Grupos funcionales distintos en total
+    integer(kind=int16) :: i, j
+    
+    ! Units available to open a file:
+    integer(kind=int16) :: intrcn32_unit, qPar150_unit, rPar150_unit
+    ! Here the interaction parameters are dim 100 because
+    ! there is a maximum of 10 different functional groups in total
+    real(kind=real64),dimension(100,100) :: A 
     real(kind=real64),dimension(100,100) :: intrcn32_data
-    real(kind=real32), dimension(150) :: RR, QQ                                              
+    ! Arrays with re r and q parameters. Dim=150 because there are 150 values.
+    real(kind=real32), dimension(150) :: RR, QQ, rPar150_data, qPar150_data                                              
+    
+    ! Original code method for filling up "A" matrix by unsing "An" arrays.
     real(kind=real32), dimension(32) :: &
         &A1, A2, A3, A4, A5, A6, A7, A8,&
         &A9, A10, A11, A12, A13, A14, A15, A16,&
         &A17, A18, A19, A20, A21, A22, A23, A24,&
         &A25, A26, A27, A28, A29, A30, A31, A32
-
+    
     DATA RR/&
     &.9011, .6744, .4469, .2195, 1.3454,&
     &1.1167, .8886, 1.1173, .5313, .3652,&
@@ -286,29 +294,69 @@ program check
             A(i, 32) = A32(i)
         end do
         ! New method to fill up intrcn32_data (new A matrix)
-        open(unit=3333, file="src/database/intrcn32.mds",&
+        open(newunit=intrcn32_unit, file="src/database/intrcn32.mds",&
             &status='old', action='read', form="formatted")
-        read(3333, *) intrcn32_data(:32,:32)
-        close(3333)
+        read(intrcn32_unit, *) intrcn32_data(:32,:32)
+        close(intrcn32_unit)
+        ! New method to fill up rPar150_data (new RR matrix)
+        open(newunit=rPar150_unit, file="src/database/rPar150.mds",&
+            &status='old', action='read', form="formatted")
+        read(rPar150_unit, *) rPar150_data(:)
+        close(rPar150_unit)
+        ! New method to fill up qPar150_data (new QQ matrix)
+        open(newunit=qPar150_unit, file="src/database/qPar150.mds",&
+            &status='old', action='read', form="formatted")
+        read(qPar150_unit, *) qPar150_data(:)
+        close(qPar150_unit)
 
         ! Verify if everything went ok
-        ! if ("string" /= "string")& 
+
+        !if ("string" /= "string")& 
         !     &ERROR STOP ""
+        
         ! Check if intrcn32_data and A are different)
         do i = 1, 32
             do j = 1, 32
                 if (abs(A(i,j) - intrcn32_data(i,j)) > 1E-4) then
                     print *, "HERE:"
                     print *, "intrcn32_data(",i,",",j,")"
-                    print *, "intrcn32_data value is: ",intrcn32_data(i,j)
-                    print *, "original value was: ",A(i,j)
+                    print *, "intrcn32_data value is: ", intrcn32_data(i,j)
+                    print *, "original value was: ", A(i,j)
                     ERROR STOP "Look NEO, an error in the Matrix!.& 
                     &New matrix code for parameters gives different values& 
-                    &that differs from the original."
+                    &and differs from the original."
                 end if
             end do
-        end do    
+        end do
+        ! Check if rPar150_data and RR are different)
+        !print '(150F5.2)', RR-rPar150_data
+        do i = 1, 150
+            if (abs(RR(i) - rPar150_data(i)) > 1E-4) then
+                print *, "HERE:"
+                print *, "rPar150_data(",i,")"
+                print *, "rPar150_data value is: ", rPar150_data(i)
+                print *, "original value was: ", RR(i)
+                ERROR STOP "Look NEO, an error in the Matrix!.& 
+                &New matrix code for R parameters gives different values& 
+                &and differs from the original."
+            end if
+        end do
+        ! Check if qPar150_data and QQ are different)    
+        !print '(150F5.2)', QQ-QPar150_data
+        do i = 1, 150
+            if (abs(QQ(i) - qPar150_data(i)) > 1E-4) then
+                print *, "HERE:"
+                print *, "qPar150_data(",i,")"
+                print *, "qPar150_data value is: ", qPar150_data(i)
+                print *, "original value was: ", QQ(i)
+                ERROR STOP "Look NEO, an error in the Matrix!.& 
+                &New matrix code for Q parameters gives different values& 
+                &and differs from the original."
+            end if
+        end do
+        
         print *, test_ok
+
     else 
         print *, test_disabled
     endif
