@@ -1,9 +1,11 @@
 program check
     use do_tests
+    use iso_fortran_env, only: int32
     implicit none
     character(len=8) :: filename = "name.dat"
     character(len=16) :: flash_filename = "llecalas2.dat"
     character(len=36),dimension(2) :: array = (/"",""/)
+    integer(kind=int32) :: doLeerBases_tmp
     print *,""
     print *, test_run//"open_file-check"
     if (pause_test) pause
@@ -15,7 +17,8 @@ program check
             &ERROR STOP "Max. lines has been changed."
         if (len(array(1))/=36)&
             &ERROR STOP "Max. char number has been changed."
-        if (ichar(trim(array(1)))*0/=0)&
+        read(array(1),'(I1)') doLeerBases_tmp
+        if (doLeerBases_tmp*0/=0)&
             &ERROR STOP "First line read was not a number"
         if (len_trim(array(2))/=15)&
             &ERROR STOP "Second line has been changed(15)."

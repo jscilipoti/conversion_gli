@@ -30,7 +30,7 @@ subroutine leer_input_flash(name_filename)
     call open_textfile(name_filename, file_data, file_vars, name_maxlen)
 
      ! Read the number of parameters and the name from the file
-    doLeerBases = ichar(trim(file_data(1)))
+    read(file_data(1),'(I1)') doLeerBases
     flashInput_name = file_data(2)
 
     ! Remove the leading and trailing quotes from the name
@@ -64,6 +64,7 @@ subroutine leer_input_flash(name_filename)
     read(2,*) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq     
     
     call open_database(modelo)
+
     call PARIN2(NKK, NGG, Pxx, Txx)
     
     ! The following code is run whether vapor phase is not included in flash
