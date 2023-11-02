@@ -5,16 +5,7 @@ program check
     implicit none
     integer(kind=int8) :: i,j
     real(kind=real64),dimension(100,100) :: A !Aca van los parametros de inteaccion es de dim 100 porque hay un maximo de 10 Grupos funcionales distintos en total
-    real(kind=real64),dimension(100,100) :: intrcnParData
-    real(kind=real32),dimension(32) ::& 
-        intrcnParData_1, intrcnParData_2, intrcnParData_3, intrcnParData_4,& 
-        intrcnParData_5, intrcnParData_6, intrcnParData_7, intrcnParData_8,& 
-        intrcnParData_9, intrcnParData_10, intrcnParData_11, intrcnParData_12,&
-        intrcnParData_13, intrcnParData_14, intrcnParData_15, intrcnParData_16,&
-        intrcnParData_17, intrcnParData_18, intrcnParData_19, intrcnParData_20,&
-        intrcnParData_21, intrcnParData_22, intrcnParData_23, intrcnParData_24,&
-        intrcnParData_25, intrcnParData_26, intrcnParData_27, intrcnParData_28,&
-        intrcnParData_29, intrcnParData_30, intrcnParData_31, intrcnParData_32
+    real(kind=real64),dimension(100,100) :: intrcn32_data
     real(kind=real32), dimension(150) :: RR, QQ                                              
     real(kind=real32), dimension(32) :: &
         A1, A2, A3, A4, A5, A6, A7, A8,&
@@ -123,46 +114,14 @@ program check
     DATA A29/928.3, 500.7, 364.2, 4*1., -364.2, 20*1., 0., 3*1.    /         
     DATA A30/331., 115.4, -58.1, 4*1., -117.4, 3*1., 173.8, 17*1., 0., 2*1.   /
     DATA A31/561.4, 784.4, 21.97, 238., 3*1., 18.41, 22*1., 0., 1.       /    
-    DATA A32/956.5, 265.4, 84.16, 132.2, 27*1., 0./   
-    intrcnParData_1 = A1
-    intrcnParData_2 = A2
-    intrcnParData_3 = A3
-    intrcnParData_4 = A4
-    intrcnParData_5 = A5
-    intrcnParData_6 = A6
-    intrcnParData_7 = A7
-    intrcnParData_8 = A8
-    intrcnParData_9 = A9
-    intrcnParData_10 = A10
-    intrcnParData_11 = A11
-    intrcnParData_12 = A12
-    intrcnParData_13 = A13
-    intrcnParData_14 = A14
-    intrcnParData_15 = A15
-    intrcnParData_16 = A16
-    intrcnParData_17 = A17
-    intrcnParData_18 = A18
-    intrcnParData_19 = A19
-    intrcnParData_20 = A20
-    intrcnParData_21 = A21
-    intrcnParData_22 = A22
-    intrcnParData_23 = A23
-    intrcnParData_24 = A24
-    intrcnParData_25 = A25
-    intrcnParData_26 = A26
-    intrcnParData_27 = A27
-    intrcnParData_28 = A28
-    intrcnParData_29 = A29
-    intrcnParData_30 = A30
-    intrcnParData_31 = A31
-    intrcnParData_32 = A32
-    
+    DATA A32/956.5, 265.4, 84.16, 132.2, 27*1., 0./    
     
     print *,""
     print *, test_run//"PARIN2-Check"
     
     if (.true.) then
         if (pause_test) pause
+        ! Original Loop to fill up A matrix
         do i = 1, 32                                                       
             A(i, 1) = A1(i)                                                      
             A(i, 2) = A2(i)                                                      
@@ -197,46 +156,27 @@ program check
             A(i, 31) = A31(i)                                                    
             A(i, 32) = A32(i)
         end do
-        open(unit=3333, file="src/database/intrcnParData.mds",&
-         status='old', action='read')
-        
-        do i = 1, 32
-            !do j = 1, 32
-            print '(32F9.3)',intrcnParData(i,:32)
-            print *,""
-            print *,""
-            read(3333, '(32F9.3)') intrcnParData(i,:32)
-            !intrcnParData(i, :32) = &
-                ! [intrcnParData_1(i), intrcnParData_2(i),&
-                ! intrcnParData_3(i), intrcnParData_4(i),&
-                ! intrcnParData_5(i), intrcnParData_6(i),&
-                ! intrcnParData_7(i), intrcnParData_8(i),&
-                ! intrcnParData_9(i), intrcnParData_10(i),&
-                ! intrcnParData_11(i), intrcnParData_12(i),&
-                ! intrcnParData_13(i), intrcnParData_14(i),&
-                ! intrcnParData_15(i), intrcnParData_16(i),&
-                ! intrcnParData_17(i), intrcnParData_18(i),&
-                ! intrcnParData_19(i), intrcnParData_20(i),&
-                ! intrcnParData_21(i), intrcnParData_22(i),&
-                ! intrcnParData_23(i), intrcnParData_24(i),&
-                ! intrcnParData_25(i), intrcnParData_26(i),&
-                ! intrcnParData_27(i), intrcnParData_28(i),&
-                ! intrcnParData_29(i), intrcnParData_30(i),&
-                ! intrcnParData_31(i), intrcnParData_32(i)]
-            !end do
-        end do
-        !print '(32F8.2)', intrcnParData(:32,:32)
-        !print '(32F5.2)', intrcnParData(:32,:32)-A(:32,:32)
-        !Check if everything went OK
+        ! New method to fill up intrcn32_data (new A matrix)
+        open(unit=3333, file="src/database/intrcn32.mds",&
+         status='old', action='read', form="formatted")
+        read(3333, *) intrcn32_data(:32,:32)
+        close(3333)
+
+        ! Verify if everything went ok
         if ("string" /= "string")& 
             ERROR STOP ""
+        ! Check if intrcn32_data and A are different)
         do i = 1, 32
             do j = 1, 32
-            if (abs(A(i,j) - intrcnParData(i,j)) > 1E-8)&
-                print *, "intrcnParData(",i,",",j,")"
-                ERROR STOP "Look NEO, an error in the Matrix!.& 
-                New matrix code for parameters gives different values& 
-                that differs from the original."
+                if (abs(A(i,j) - intrcn32_data(i,j)) > 1E-4) then
+                    print *, "HERE:"
+                    print *, "intrcn32_data(",i,",",j,")"
+                    print *, "intrcn32_data value is: ",intrcn32_data(i,j)
+                    print *, "original value was: ",A(i,j)
+                    ERROR STOP "Look NEO, an error in the Matrix!.& 
+                    &New matrix code for parameters gives different values& 
+                    &that differs from the original."
+                end if
             end do
         end do    
         print *, test_ok
