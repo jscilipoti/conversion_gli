@@ -74,7 +74,7 @@ subroutine open_textfile(filename,array,max_lines,max_chars)
     character(len=*),intent(in) :: filename
     
     open(unit=file_unit, file=filename,&
-        status='old', action='read', iostat=stat) ! open the file for reading
+        &status='old', action='read', iostat=stat) ! open the file for reading
     if (stat /= 0) then ! check for errors
         print *, 'Error opening file ', filename
         stop

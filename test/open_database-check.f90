@@ -25,10 +25,10 @@ program check
         close(unit=14)
         close(unit=16)
         !Check if everything went OK
-        if ("string" /= "string")& 
-            ERROR STOP ""
-        if (abs(0 - 0) > 1E-8)&
-            ERROR STOP ""
+        ! if ("string" /= "string")& 
+        !     &ERROR STOP ""
+        ! if (abs(0 - 0) > 1E-8)&
+        !     &ERROR STOP ""
             
         print *, test_ok
     else 

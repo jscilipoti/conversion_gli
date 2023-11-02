@@ -43,25 +43,25 @@ program check
     
     !Check if everything went OK
     if (abs(zf_check(1) - ULV7_data(1))>1E-8 .or. isnan(zf_check(1)))&
-    ERROR STOP "Zf of component 1 has changed"
-if (abs(zf_check(2) - ULV7_data(2))>1E-8 .or. isnan(zf_check(2)))&
-    ERROR STOP "Zf of component 2 has changed"
-if (abs(zf_check(3) - ULV7_data(3))>1E-8 .or. isnan(zf_check(3)))&
-    ERROR STOP "Zf of component 3 has changed"
-if (abs(zf_check(4) - ULV7_data(4))>1E-8 .or. isnan(zf_check(4)))& 
-    ERROR STOP "Zf of component 4 has changed"
-if (abs(zf_check(5) - ULV7_data(5))>1E-8 .or. isnan(zf_check(5)))& 
-    ERROR STOP "Zf of component 5 has changed"
-if (abs(zf_check(6) - ULV7_data(6))>1E-8 .or. isnan(zf_check(6)))& 
-    ERROR STOP "Zf of component 6 has changed"
-if (abs(zf_check(7) - ULV7_data(7))>1E-8 .or. isnan(zf_check(7)))& 
-    ERROR STOP "Zf of component 7 has changed"
-if (abs(ksalida_check(1) - ULV7_data(8))>1E-8 .or. isnan(ksalida_check(1)))& 
-    ERROR STOP "K1 has changed"
-if (abs(ksalida_check(2) - ULV7_data(9))>1E-8 .or. isnan(ksalida_check(2)))& 
-    ERROR STOP "K2 has changed"
-if (abs(ksalida_check(3) - ULV7_data(10))>1E-8.or. isnan(ksalida_check(3)))& 
-    ERROR STOP "K3 has changed"
+        &ERROR STOP "Zf of component 1 has changed"
+    if (abs(zf_check(2) - ULV7_data(2))>1E-8 .or. isnan(zf_check(2)))&
+        &ERROR STOP "Zf of component 2 has changed"
+    if (abs(zf_check(3) - ULV7_data(3))>1E-8 .or. isnan(zf_check(3)))&
+        &ERROR STOP "Zf of component 3 has changed"
+    if (abs(zf_check(4) - ULV7_data(4))>1E-8 .or. isnan(zf_check(4)))& 
+        &ERROR STOP "Zf of component 4 has changed"
+    if (abs(zf_check(5) - ULV7_data(5))>1E-8 .or. isnan(zf_check(5)))& 
+        &ERROR STOP "Zf of component 5 has changed"
+    if (abs(zf_check(6) - ULV7_data(6))>1E-8 .or. isnan(zf_check(6)))& 
+        &ERROR STOP "Zf of component 6 has changed"
+    if (abs(zf_check(7) - ULV7_data(7))>1E-8 .or. isnan(zf_check(7)))& 
+        &ERROR STOP "Zf of component 7 has changed"
+    if (abs(ksalida_check(1) - ULV7_data(8))>1E-8 .or. isnan(ksalida_check(1)))& 
+        &ERROR STOP "K1 has changed"
+    if (abs(ksalida_check(2) - ULV7_data(9))>1E-8 .or. isnan(ksalida_check(2)))& 
+        &ERROR STOP "K2 has changed"
+    if (abs(ksalida_check(3) - ULV7_data(10))>1E-8.or. isnan(ksalida_check(3)))& 
+        &ERROR STOP "K3 has changed"
 
     print *, test_ok
     999 continue

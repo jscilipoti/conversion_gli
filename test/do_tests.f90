@@ -2,18 +2,18 @@ module do_tests
     implicit none
     private
     public :: &
-    pause_test,&
-    test_ok,&
-    test_disabled,&
-    test_run,&
-    test_error,&
-    ALL7_check,&
-    ULL7_check,&
-    ALV7_check,&
-    ULV7_check,&
-    open_file_check,&
-    leer_input_flash_check,&
-    open_database_check
+    &pause_test,&
+    &test_ok,&
+    &test_disabled,&
+    &test_run,&
+    &test_error,&
+    &ALL7_check,&
+    &ULL7_check,&
+    &ALV7_check,&
+    &ULV7_check,&
+    &open_file_check,&
+    &leer_input_flash_check,&
+    &open_database_check
   
  
     ! These are module variables that can be used by any program unit that uses this module

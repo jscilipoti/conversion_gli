@@ -9,8 +9,8 @@ subroutine leer_input_flash(name_filename)
 
     use iso_fortran_env, only: int16, int8
     use InputData, only:&
-        name, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
-        ANT,NTEXT
+        &name, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
+        &ANT,NTEXT
     use flash, only: P, T, Z
     use CUFAC, only: NKK, NGG, Pxx, Txx
     

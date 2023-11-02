@@ -103,30 +103,30 @@ subroutine open_database(model)
         ! should be disregarded.]
         if(model /= 2) then ! When model is either UNIFAC (0) or UNIQUAC (1)...
             open (unit=13, file=path//intrcn_mds, status='old',&
-            access='direct', form='formatted', recl=850, action='read',&
-            iostat=stat)
+            &access='direct', form='formatted', recl=850, action='read',&
+            &iostat=stat)
             if (stat /= 0) then ! check for errors
                 print *, 'Error opening file ', intrcn_mds
                 stop
             end if   
         else ! When model is A-UNIFAC (2)...    
             open (unit=13, file=path//intrcnas_mds, status='old',&
-            access='direct',form='formatted',recl=850, action='read', &
-            iostat=stat)
+            &access='direct',form='formatted',recl=850, action='read', &
+            &iostat=stat)
             if (stat /= 0) then ! check for errors
                 print *, 'Error opening file ', intrcnas_mds
                 stop
             end if   
             open (unit=15, file=path//parvolas_mds, status='old', &
-            access='direct', form='formatted', recl=850, action='read', &
-            iostat=stat)
+            &access='direct', form='formatted', recl=850, action='read', &
+            &iostat=stat)
             if (stat /= 0) then ! check for errors
                 print *, 'Error opening file ', parvolas_mds
                 stop
             end if   
             open (unit=16, file=path//pareneas_mds, status='old', &
-            access='direct', form='formatted', recl=850, action='read', &
-            iostat=stat)
+            &access='direct', form='formatted', recl=850, action='read', &
+            &iostat=stat)
             if (stat /= 0) then ! check for errors
                 print *, 'Error opening file ', pareneas_mds
                 stop
@@ -135,16 +135,16 @@ subroutine open_database(model)
 
         ! When model is either A-UNIFAC (0), UNIQUAC (1) or A-UNIFAC (2)...
         open (unit=14, file=path//gruposram_mds, status='old', &
-            access='direct',form='formatted',recl=300, action='read', &
-            iostat=stat)
+            &access='direct',form='formatted',recl=300, action='read', &
+            &iostat=stat)
         if (stat /= 0) then ! check for errors
             print *, 'Error opening file ', gruposram_mds
             stop
         end if  
         !open (unit=15, file='src/database/parvolas.mds', status='old', &
-        !   access='direct', form='formatted', recl=850)
+        !   &access='direct', form='formatted', recl=850)
         !open (unit=16, file='src/database/pareneas.mds', status='old', &
-        !   access='direct', form='formatted', recl=850)
+        !   &access='direct', form='formatted', recl=850)
         ! [The four previous lines were misplaced in the code, as they are only 
         ! relevant for the A-UNIFAC model (model = 2), which uses associative 
         ! interaction parameters. For the classic UNIFAC model (model = 0), 
@@ -154,22 +154,22 @@ subroutine open_database(model)
 
     else ! When model is GC (3)...
         open (unit=13, file=path//intrcngcalpha_mds, status='old',&
-        access='direct', form='formatted', recl=730, action='read', &
-        iostat=stat)
+            &access='direct', form='formatted', recl=730, action='read', &
+            &iostat=stat)
         if (stat /= 0) then ! check for errors
             print *, 'Error opening file ', intrcngcalpha_mds
             stop
         end if  
         open (unit=14, file=path//gruposramgc_mds, status='old',&
-            access='direct', form='formatted', recl=263, action='read', &
-            iostat=stat)
+            &access='direct', form='formatted', recl=263, action='read', &
+            &iostat=stat)
         if (stat /= 0) then ! check for errors
             print *, 'Error opening file ', gruposramgc_mds
             stop
         end if  
         open (unit=16, file=path//intrcngckapa_mds, status='old',&
-            access='direct', form='formatted', recl=730, action='read', &
-            iostat=stat)
+            &access='direct', form='formatted', recl=730, action='read', &
+            &iostat=stat)
         if (stat /= 0) then ! check for errors
             print *, 'Error opening file ', intrcngckapa_mds
             stop

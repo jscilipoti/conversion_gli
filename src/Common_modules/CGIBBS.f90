@@ -2,7 +2,7 @@ module CGIBBS
     implicit none
     private
     public :: NF, MAXZ, GNUL, Z, A, XVL, SFAS,&
-    GAM, AL, DA, XM
+    &GAM, AL, DA, XM
   
  
     ! These are module variables that can be used by any program unit that uses this module

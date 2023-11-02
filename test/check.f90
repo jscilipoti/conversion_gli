@@ -12,9 +12,9 @@ program check
  
         !Check if everything went OK
         if ("string" /= "string")& 
-            ERROR STOP ""
+            &ERROR STOP ""
         if (abs(0 - 0) > 1E-8)&
-            ERROR STOP ""
+            &ERROR STOP ""
             
         print *, test_ok
     else 
