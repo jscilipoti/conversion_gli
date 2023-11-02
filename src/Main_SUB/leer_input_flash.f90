@@ -19,13 +19,15 @@ subroutine leer_input_flash(name_filename)
     
     implicit none    
     
-    integer(kind=int16):: i, j, k, stat
+    integer(kind=int16) :: i, j, k, stat
+    integer(kind=int16), parameter :: file_vars = 2
     integer(kind=int8) :: doLeerBases = 0
     character(len=*), intent(in) :: name_filename
-    character(len=name_maxlen), dimension(2) :: file_data
+    
+    character(len=name_maxlen), dimension(file_vars) :: file_data
     
     ! Open the file for reading
-    call open_textfile(name_filename, file_data, 2, name_maxlen)
+    call open_textfile(name_filename, file_data, file_vars, name_maxlen)
 
      ! Read the number of parameters and the name from the file
     doLeerBases = ichar(trim(file_data(1)))

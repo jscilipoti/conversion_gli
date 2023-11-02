@@ -1,29 +1,32 @@
 subroutine PARIN2 (N,NG,Px,Tx)           
     use InputData                                      
     !implicit none
-    !integer :: I
+
     IMPLICIT REAL*8(A-H, O-Z)    
-  !PARAMETER(NMS = 2) !, NCOM = 3, NSCM = 10)                                      
+    !PARAMETER(NMS = 2) !, NCOM = 3, NSCM = 10)                                      
+    
+    ! DELETE FOLLOWING COMMON BLOCKS 
     common/asoc/nktt, igamt(20, 12), nytt(20, 12)  !, p4, p5
     common/grupas1/rkass(6, 12, 6, 12), enass(6, 12, 6, 12), deloh(6, 12, 6, 12)!Alfon
     common/nga/nga, mass(12) 
-      common/ioh2/rngoh(12, 12)
-
-  common/ioh2sis/rngoht(3, 2)
+    common/ioh2/rngoh(12, 12)
+    common/ioh2sis/rngoht(3, 2)
+    
+    ! DELETED COMMON BLOCKS
     !common/CUFAC/N, NG, Px(10, 10), Tx
     !common/CUFAC/N, NG, Px, Tx                                     
     common/CQT/QT(10, 10), Q(10), R(10)                                  
     common/CMODEL/MODEL                                               
     common/COUT/IOUT                                                  
+    
     dimension RT(10, 10), A(100, 100), NGM(10) !, MAINSG(57)                   
     dimension MS(10, 10, 2), NY(10, 20), JH(150), IH(20)
     dimension Px(10,10)  
-
-  dimension NPUNTA(NMG), NGRUPA(NMG), NPUNT(NMG), NGRUP(NMG) !xnoh1(12), &
-
-  INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), J, K, CANIL(10) !, A, B, rngoh(NC, NSCM), GA, &
-           !
-      real*8::par             
+    dimension NPUNTA(NMG), NGRUPA(NMG), NPUNT(NMG), NGRUP(NMG) !xnoh1(12), &
+    
+    INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), J, K, CANIL(10) 
+    !, A, B, rngoh(NC, NSCM), GA, &
+    real*8::par             
     logical VL
     external mainsgfunc
                        
